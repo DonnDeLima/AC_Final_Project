@@ -8,36 +8,52 @@ from algorithms.hashing import sha1, sha3, sha256, md5
 st.set_page_config(page_title="Cryptography App", layout="wide")
 st.title("🔐 Applied Cryptography Application")
 
-# ------------------ Side Bar ------------------ #
+# ------------------ Sidebar (Accordion Style) ------------------ #
 st.sidebar.title("🧪 Choose a Cryptographic Algorithm")
+selected_algorithm = None
 
-category = st.sidebar.radio("Category", ["Symmetric", "Asymmetric", "Hashing"])
+with st.sidebar.expander("🔁 Symmetric Algorithms", expanded=True):
+    if st.button("Caesar Cipher"):
+        selected_algorithm = "caesar"
+    if st.button("Vernam Cipher"):
+        selected_algorithm = "vernam"
+    if st.button("Vigenere Cipher"):
+        selected_algorithm = "vigenere"
 
-if category == "Symmetric":
-    algo = st.sidebar.selectbox("Select Algorithm", ["Caesar Cipher", "Vernam Cipher", "Vigenere Cipher"])
-    if algo == "Caesar Cipher":
-        caesar.run()
-    elif algo == "Vernam Cipher":
-        vernam.run()
-    elif algo == "Vigenere Cipher":
-        vigenere.run()
+with st.sidebar.expander("🔀 Asymmetric Algorithms", expanded=False):
+    if st.button("RSA"):
+        selected_algorithm = "rsa"
+    if st.button("Diffie-Hellman"):
+        selected_algorithm = "diffie_hellman"
 
-elif category == "Asymmetric":
-    algo = st.sidebar.selectbox("Select Algorithm", ["RSA", "Diffie-Hellman"])
-    if algo == "RSA":
-        rsa.run()
-    elif algo == 'Diffie-Hellman':
-        diffie_hellman.run()
+with st.sidebar.expander("📎 Hashing Algorithms", expanded=False):
+    if st.button("SHA-1"):
+        selected_algorithm = "sha1"
+    if st.button("MD5"):
+        selected_algorithm = "md5"
+    if st.button("SHA-256"):
+        selected_algorithm = "sha256"
+    if st.button("SHA-3"):
+        selected_algorithm = "sha3"
 
-elif category == "Hashing":
-    algo = st.sidebar.selectbox("Select Algorithm", ["SHA-1", "MD5", "SHA-256", "SHA-3"])
-    if algo == "SHA-1":
-        sha1.run()
-    elif algo == 'MD5':
-        md5.run()
-    elif algo == 'SHA-256':
-        sha256.run()
-    elif algo == 'SHA-3':
-        sha3.run()
-        
-# -------------------------------------------------------- #
+# ------------------ Main Panel ------------------ #
+if selected_algorithm == "caesar":
+    caesar.run()
+elif selected_algorithm == "vernam":
+    vernam.run()
+elif selected_algorithm == "vigenere":
+    vigenere.run()
+elif selected_algorithm == "rsa":
+    rsa.run()
+elif selected_algorithm == "diffie_hellman":
+    diffie_hellman.run()
+elif selected_algorithm == "sha1":
+    sha1.run()
+elif selected_algorithm == "md5":
+    md5.run()
+elif selected_algorithm == "sha256":
+    sha256.run()
+elif selected_algorithm == "sha3":
+    sha3.run()
+else:
+    st.info("Select an algorithm from the sidebar to begin.")
