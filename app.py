@@ -12,7 +12,7 @@ st.title("🔐 Applied Cryptography Application")
 st.sidebar.title("🧪 Choose a Cryptographic Algorithm")
 selected_algorithm = None
 
-with st.sidebar.expander("🔁 Symmetric Algorithms", expanded=True):
+with st.sidebar.expander("🔁 Symmetric Algorithms", expanded=False):
     if st.button("Caesar Cipher"):
         selected_algorithm = "caesar"
     if st.button("Vernam Cipher"):
