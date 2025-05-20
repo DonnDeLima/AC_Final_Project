@@ -1,0 +1,9 @@
+https://www.tutorialspoint.com/cryptography/cryptography_diffie_hellman_algorithm.htm
+https://www.geeksforgeeks.org/vernam-cipher-in-cryptography/ 
+https://www.geeksforgeeks.org/rsa-algorithm-cryptography/ 
+https://www.geeksforgeeks.org/sha-256-and-sha-3/ 
+https://infosecscout.com/md5-vs-sha256/  
+https://www.encryptionconsulting.com/education-center/what-is-sha/ 
+https://www.geeksforgeeks.org/vigenere-cipher/ 
+https://binaryterms.com/block-cipher.html 
+https://binaryterms.com/block-cipher.html 
