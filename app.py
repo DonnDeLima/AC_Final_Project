@@ -49,7 +49,7 @@ elif selected_algorithm == "vernam":
 elif selected_algorithm == "vigenere":
     vigenere.run()
 elif selected_algorithm == "rsa":
-    rsa.run()
+    RSA.run()
 elif selected_algorithm == "diffie_hellman":
     diffie_hellman.run()
 elif selected_algorithm == "sha1":
