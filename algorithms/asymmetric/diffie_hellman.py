@@ -41,24 +41,24 @@ def aes_decrypt(ciphertext: bytes, key: bytes) -> bytes:
 
 def run():
     st.subheader("🔐 Diffie-Hellman Key Exchange with AES Encryption")
-
+    text_input = st.text_area("Plaintext or Ciphertext (Base64 for ciphertext)")
+    file = st.file_uploader("Or upload a .txt file", type=["txt"])
+    
     col1, col2 = st.columns(2)
     with col1:
-        your_private_key_input = st.text_area(
-            "Your Private Key (hex, leave blank to auto-generate)",
-            help="Private key should be a large random hex number."
-        )
         your_public_key_input = st.text_area(
             "Your Public Key (hex)",
             help="Automatically generated from your private key."
         )
+        your_private_key_input = st.text_area(
+            "Your Private Key (hex, leave blank to auto-generate)",
+            help="Private key should be a large random hex number."
+        )
+    with col2:
         their_public_key_input = st.text_area(
             "Their Public Key (hex)",
             help="Public key from the other party."
         )
-    with col2:
-        text_input = st.text_area("Plaintext or Ciphertext (Base64 for ciphertext)")
-        file = st.file_uploader("Or upload a .txt file", type=["txt"])
 
     operation = st.radio("Operation", ["Encrypt", "Decrypt"])
 
@@ -66,6 +66,8 @@ def run():
     if not your_private_key_input.strip():
         private_key = diffie_hellman_generate_private_key()
         your_private_key_input = hex(private_key)[2:]
+        other_private_key = diffie_hellman_generate_private_key()
+        other_private_key_input = hex(other_private_key)[2:]
     else:
         try:
             private_key = int(your_private_key_input.strip(), 16)
@@ -76,10 +78,13 @@ def run():
     # Generate your public key
     your_public_key = diffie_hellman_generate_public_key(private_key)
     your_public_key_hex = hex(your_public_key)[2:]
+    other_public_key = diffie_hellman_generate_public_key(other_private_key)
+    other_public_key_hex = hex(other_public_key)[2:]
 
     # Display your public key
     st.text_area("Your Public Key (auto-generated)", your_public_key_hex, height=100)
-
+    st.text_area("Other Public Key (auto-generated)", other_public_key_hex, height=100)
+    
     if not their_public_key_input.strip():
         st.warning("Enter their public key to proceed.")
         return
