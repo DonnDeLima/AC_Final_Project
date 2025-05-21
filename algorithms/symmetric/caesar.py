@@ -15,30 +15,37 @@ def decrypt(text, shift):
 def run():
     st.subheader("🔐 Caesar Cipher")
 
-    with st.expander("ℹ️ What is the Caesar Cipher?"):
+    with st.expander("ℹ️ About Caesar Cipher"):
         st.markdown("""
-        **Caesar Cipher Overview**
-    
-        - **History**: One of the oldest known ciphers, used by Julius Caesar to send military messages.
-        - **Mechanism**: Shifts each character in the text by a fixed number (the "shift key") within a set of characters.
-        - **Pseudocode**:
-          ```
-          For each character in the input:
-              If character is in the character set:
-                  Find its index.
-                  Add the shift (or subtract for decryption).
-                  Wrap around if needed (modulo length of set).
-                  Replace character.
-              Else:
-                  Leave as is.
-          ```
-        - **Use Cases**:
-          - Simple obfuscation
-          - Educational demonstrations of classical encryption
-          - Not suitable for modern secure communication
-    
-        - **Character Set**: This version supports all printable characters (letters, digits, punctuation, etc.).
+        **🕰️ Brief History**  
+        The Caesar cipher is one of the oldest known encryption techniques, attributed to **Julius Caesar**, who used it to send secret military messages.
+
+        **🔧 How It Works**  
+        - Each character in the plaintext is shifted by a fixed number of positions (the "key") in a defined character set.
+        - Decryption simply shifts characters back by the same amount.
+        - Characters outside the set remain unchanged.
+
+        **🧾 Pseudocode**  
+        ```
+        for char in text:
+            if char in character_set:
+                index = character_set.index(char)
+                shifted_index = (index + key) % len(character_set)  # use -key for decryption
+                output += character_set[shifted_index]
+            else:
+                output += char
+        ```
+
+        **📋 Use Cases**  
+        - Basic obfuscation
+        - Cryptography education
+        - Not secure for modern applications
+
+        **⚠️ Limitations**  
+        - Vulnerable to **brute-force attacks** due to small key space
+        - Easily broken with **frequency analysis**
         """)
+
 
     col1, col2 = st.columns(2)
     with col1:
