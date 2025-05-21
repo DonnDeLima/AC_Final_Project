@@ -1,48 +1,59 @@
 import streamlit as st
-import base64
 
-def simple_encrypt(plaintext: str, alice_private: int, bob_public: int) -> str:
-    shared_key = alice_private + bob_public
-    encrypted = [ord(char) + shared_key for char in plaintext]
-    return base64.b64encode(bytes(encrypted)).decode()
+# Diffie-Hellman parameters (small prime for demonstration, NOT secure)
+P = 23  # small prime for simplicity
+G = 5   # primitive root modulo P
 
-def simple_decrypt(cipher_b64: str, bob_private: int, alice_public: int) -> str:
-    shared_key = bob_private + alice_public
-    try:
-        cipher_bytes = base64.b64decode(cipher_b64)
-        decrypted = ''.join([chr(byte - shared_key) for byte in cipher_bytes])
-        return decrypted
-    except Exception as e:
-        return f"[Decryption Error] {e}"
+def mod_exp(base, exp, mod):
+    return pow(base, exp, mod)
 
-def run():
-    st.subheader("🔐 Simple Alice & Bob Key-Pair Cryptography Demo")
+def xor_encrypt_decrypt(message: str, key: int) -> str:
+    # Simple XOR of message bytes with key repeated
+    key_bytes = key.to_bytes((key.bit_length() + 7) // 8 or 1, 'big')
+    msg_bytes = message.encode()
+    result = bytes([b ^ key_bytes[i % len(key_bytes)] for i, b in enumerate(msg_bytes)])
+    return result.decode(errors='ignore')
 
-    col1, col2 = st.columns(2)
-    with col1:
-        alice_private = st.number_input("🔑 Alice's Private Key", min_value=1, value=5)
-        bob_public = st.number_input("🧾 Bob's Public Key", min_value=1, value=7)
-    with col2:
-        bob_private = st.number_input("🔑 Bob's Private Key", min_value=1, value=3)
-        alice_public = st.number_input("🧾 Alice's Public Key", min_value=1, value=9)
+st.title("Diffie-Hellman Key Exchange Demo")
 
-    mode = st.radio("Select Mode", ["Encrypt (Alice → Bob)", "Decrypt (Bob → Alice)"])
-    message = st.text_area("Enter Message (Plaintext or Base64 Ciphertext)")
-    
-    st.markdown("---")  # Divider for visual clarity
-    
-    if not message.strip():
-        st.info("Enter a message to proceed.")
-        return
-    
-    if mode == "Encrypt (Alice → Bob)":
-        encrypted = simple_encrypt(message, alice_private, bob_public)
-        st.success("🔐 Encrypted Message (Base64)")
-        st.code(encrypted)
-    else:
-        decrypted = simple_decrypt(message.strip(), bob_private, alice_public)
-        st.success("🔓 Decrypted Message")
-        st.text_area("", decrypted, height=200)
+# Alice generates private key
+alice_private = st.number_input("Alice's Private Key (secret)", min_value=1, max_value=P-2, value=6)
+alice_public = mod_exp(G, alice_private, P)
+st.write(f"Alice's Public Key: {alice_public}")
 
-if __name__ == "__main__":
-    run()
+# Bob generates private key
+bob_private = st.number_input("Bob's Private Key (secret)", min_value=1, max_value=P-2, value=15)
+bob_public = mod_exp(G, bob_private, P)
+st.write(f"Bob's Public Key: {bob_public}")
+
+# Alice computes shared secret using Bob's public key
+alice_shared = mod_exp(bob_public, alice_private, P)
+st.write(f"Alice's Computed Shared Secret: {alice_shared}")
+
+# Bob computes shared secret using Alice's public key
+bob_shared = mod_exp(alice_public, bob_private, P)
+st.write(f"Bob's Computed Shared Secret: {bob_shared}")
+
+st.markdown("---")
+
+operation = st.radio("Choose operation:", ["Encrypt", "Decrypt"])
+
+text_input = st.text_area("Input text")
+
+if operation == "Encrypt":
+    if text_input:
+        ciphertext = xor_encrypt_decrypt(text_input, alice_shared)
+        st.success("Encrypted text (XOR cipher):")
+        st.code(ciphertext.encode('utf-8').hex())
+elif operation == "Decrypt":
+    if text_input:
+        try:
+            # input is hex string for ciphertext
+            ciphertext_bytes = bytes.fromhex(text_input)
+            # convert to string for XOR decrypt
+            ciphertext_str = ciphertext_bytes.decode('latin1')
+            plaintext = xor_encrypt_decrypt(ciphertext_str, bob_shared)
+            st.success("Decrypted text:")
+            st.code(plaintext)
+        except Exception as e:
+            st.error(f"Failed to decrypt: {e}")
