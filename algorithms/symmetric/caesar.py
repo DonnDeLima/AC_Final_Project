@@ -1,14 +1,16 @@
 import streamlit as st
+import string
+
+printable = string.printable  # contains digits, letters, punctuation, etc.
 
 def encrypt(text, shift):
-    result = ""
-    for char in text:
-        if char.isalpha():
-            shift_base = ord('A') if char.isupper() else ord('a')
-            result += chr((ord(char) - shift_base + shift) % 26 + shift_base)
-        else:
-            result += char
-    return result
+    return ''.join(
+        printable[(printable.index(c) + shift) % len(printable)] if c in printable else c
+        for c in text
+    )
+
+def decrypt(text, shift):
+    return encrypt(text, -shift)
 
 def decrypt(text, shift):
     return encrypt(text, -shift)
