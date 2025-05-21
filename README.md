@@ -45,6 +45,7 @@ or include simplified pseudocode)
 2. Choose from different Cryptograhic Algorithms
 
 ![FINAL NA 2](https://github.com/user-attachments/assets/f4c1e149-2779-41e2-90b9-d2d5b35b727a)
+
 3. Type or paste your plain text into the input box,or upload a .txt file containing the content you wish to encrypt or hash.
 
 ![3](https://github.com/user-attachments/assets/cd8d413f-9a3a-422a-b819-4f9c0e804e7d)
