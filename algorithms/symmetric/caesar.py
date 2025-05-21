@@ -12,9 +12,6 @@ def encrypt(text, shift):
 def decrypt(text, shift):
     return encrypt(text, -shift)
 
-def decrypt(text, shift):
-    return encrypt(text, -shift)
-
 def run():
     st.subheader("🔐 Caesar Cipher")
 
