@@ -131,8 +131,8 @@ def run():
                     plaintext = plaintext_bytes.decode('utf-8')
                     st.success("🔓 Decrypted Text")
                     st.text_area("", plaintext, height=200)
-        except (ValueError, base64.binascii.Error) as e:
-            st.error(f"Invalid ciphertext or padding error: {e}")
+                except (ValueError, base64.binascii.Error) as e:
+                    st.error(f"Invalid ciphertext or padding error: {e}")
 
 if __name__ == "__main__":
     run()
