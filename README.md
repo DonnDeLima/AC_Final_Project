@@ -1,7 +1,7 @@
 • Title Page Information: 
                    Project Title: Applied Cryptography Application
-                   Course Name:
-                   Date:
+                   Course Name: CSAC 329 - Applied Cryptography
+                   Date: May 24, 2025
 • Group Members: 
                    De Lima, Donn Robert
                    Belgado, Ruby Joy
