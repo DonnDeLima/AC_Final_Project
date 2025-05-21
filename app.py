@@ -1,7 +1,7 @@
 import streamlit as st
 
 from algorithms.symmetric import caesar, vernam, vigenere
-from algorithms.asymmetric import r_s_a, diffie_hellman, dh
+from algorithms.asymmetric import r_s_a, diffie_hellman
 from algorithms.hashing import sha1, sha3, sha256, md5
 
 # ------------------ Page Setup ------------------ #
@@ -51,7 +51,7 @@ elif selected_algorithm == "vigenere":
 elif selected_algorithm == "rsa":
     r_s_a.run()
 elif selected_algorithm == "diffie_hellman":
-    dh.run()
+    diffie_hellman.run()
 elif selected_algorithm == "sha1":
     sha1.run()
 elif selected_algorithm == "md5":
