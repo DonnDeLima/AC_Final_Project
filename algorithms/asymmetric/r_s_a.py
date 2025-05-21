@@ -56,6 +56,7 @@ def run():
         st.success("🔑 New key pair generated")
         
     col1, col2 = st.columns(2)
+    
     with col1:
         if key_input:
             try:
@@ -63,10 +64,11 @@ def run():
                 encrypted_text = rsa_encrypt(text_input, public_key)
             except Exception as e:
                 st.error(f"Key import error: {e}")
-                
+        if 'rsa_private' in st.session_state and 'rsa_public' in st.session_state:
+            st.text_area("🔐 Public Key (for Encryption)", st.session_state['rsa_public'], height=150)   
+            
     with col2:
         if 'rsa_private' in st.session_state and 'rsa_public' in st.session_state:
-            st.text_area("🔐 Public Key (for Encryption)", st.session_state['rsa_public'], height=150)
             st.text_area("🔓 Private Key (for Decryption)", st.session_state['rsa_private'], height=150)
 
     operation = st.radio("Operation", ["Encrypt", "Decrypt"])
