@@ -13,31 +13,31 @@ def run():
 
     with st.expander("ℹ️ About Vernam Cipher"):
         st.markdown("""
-        **🔑 Brief History**  
-        The Vernam cipher was developed by Gilbert Vernam in 1917. It’s a symmetric stream cipher and the basis for the **One-Time Pad**, which is considered unbreakable when used with a truly random key of the same length as the message.
-    
-        **⚙️ How It Works**  
-        - The cipher performs a bitwise XOR (`^`) between the plaintext and the key.
-        - Both plaintext and key must be the same length.
-        - Encryption and decryption use the same operation: `cipher = plaintext ⊕ key`.
-    
-        **🧾 Pseudocode**  
-        ```
-        for i in range(len(plaintext)):
-            ciphertext[i] = plaintext[i] XOR key[i]
-        ```
-    
-        **📋 Use Cases**  
-        - Secure communication in military and diplomatic settings (with a true One-Time Pad).
-        - Teaching cryptographic fundamentals.
-        - Situations where a pre-shared, random-length key is viable.
-    
-        **⚠️ Note:**  
-        The Vernam cipher is only secure if:
-        - The key is truly random
-        - The key is used only once
-        - The key is kept secret
-        """)
+            **🔑 Brief History**  
+            The Vernam cipher was developed by Gilbert Vernam in 1917. It’s a symmetric stream cipher and the basis for the **One-Time Pad**, which is considered unbreakable when used with a truly random key of the same length as the message.
+        
+            **⚙️ How It Works**  
+            - The cipher performs a bitwise XOR (`^`) between the plaintext and the key.
+            - Both plaintext and key must be the same length.
+            - Encryption and decryption use the same operation: `cipher = plaintext ⊕ key`.
+        
+            **🧾 Pseudocode**  
+            ```
+            for i in range(len(plaintext)):
+                ciphertext[i] = plaintext[i] XOR key[i]
+            ```
+        
+            **📋 Use Cases**  
+            - Secure communication in military and diplomatic settings (with a true One-Time Pad).
+            - Teaching cryptographic fundamentals.
+            - Situations where a pre-shared, random-length key is viable.
+        
+            **⚠️ Note:**  
+            The Vernam cipher is only secure if:
+            - The key is truly random
+            - The key is used only once
+            - The key is kept secret
+            """)
 
     col1, col2 = st.columns(2)
     with col1:
