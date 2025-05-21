@@ -41,18 +41,22 @@ or include simplified pseudocode)
  **Step by Step Guide**
 1. Homepage: Provides an introduction and navigation options.
    ![1](https://github.com/user-attachments/assets/930c0726-f952-4320-9228-0900802252a1)
+   
 2. Choose from different Cryptograhic Algorithms
 ![FINAL NA 2](https://github.com/user-attachments/assets/f4c1e149-2779-41e2-90b9-d2d5b35b727a)
 3. Type or paste your plain text into the input box,or upload a .txt file containing the content you wish to encrypt or hash.
+
 ![3](https://github.com/user-attachments/assets/cd8d413f-9a3a-422a-b819-4f9c0e804e7d)
 ![3](https://github.com/user-attachments/assets/343bbffd-25d6-47c3-bb58-7801b5bfc9c7)
-4.  Choose Action:For encryption/decryption algorithms,
-5.  Select Encrypt or Decrypt and Press Enter after entering the text or uploading the file.
-6.  Press Enter after entering the text or uploading the file.
-7.  You can then copy  the result for future reference.
+
+6.  Choose Action:For encryption/decryption algorithms,
+7.  Select Encrypt or Decrypt and Press Enter after entering the text or uploading the file.
+8.  Press Enter after entering the text or uploading the file.
+9.  You can then copy  the result for future reference.
+   
 ![ENCRYPT](https://github.com/user-attachments/assets/05ea4c79-b960-452f-9eb2-eaf7fec89599)
 ![DECRYPT](https://github.com/user-attachments/assets/68630a5b-6a56-4352-ae48-2582e8bda509)
-8. For hashing algorithms, select your desired hash function, then click to generate the hash.
+10. For hashing algorithms, select your desired hash function, then click to generate the hash.
 ![HASH](https://github.com/user-attachments/assets/f9495db2-36a7-4c86-bb19-fc75ce4adbd4)
 
 **Future Enhancements**
