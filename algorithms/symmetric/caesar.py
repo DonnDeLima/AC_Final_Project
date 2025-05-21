@@ -14,15 +14,28 @@ def decrypt(text, shift):
     return encrypt(text, -shift)
 
 def run():
-    st.subheader("🔤 Caesar Cipher")
+    st.subheader("🔐 Caesar Cipher")
 
-    mode = st.radio("Mode", ["Encrypt", "Decrypt"])
-    text = st.text_area("Enter Text")
-    shift = st.slider("Shift", 1, 25, 3)
+    col1, col2 = st.columns(2)
+    with col1:
+        text_input = st.text_area("Enter Plaintext or Ciphertext", help="Accepts letters, numbers, and symbols.")
+    with col2:
+        shift = st.slider("Shift (1–25)", 1, 25, 3)
 
-    if st.button("Run Caesar Cipher"):
-        if mode == "Encrypt":
-            result = encrypt(text, shift)
-        else:
-            result = decrypt(text, shift)
-        st.success(f"Result: {result}")
+    file = st.file_uploader("Or upload a .txt file", type=["txt"])
+    if file:
+        text_input = file.read().decode("utf-8")
+
+    operation = st.radio("Operation", ["Encrypt", "Decrypt"])
+    run_button = st.button("Run Caesar Cipher")
+
+    if run_button:
+        if not text_input.strip():
+            st.warning("Input text is required.")
+            return
+        try:
+            result = encrypt(text_input, shift) if operation == "Encrypt" else decrypt(text_input, shift)
+            st.success("🔐 Result")
+            st.text_area("", result, height=200)
+        except Exception as e:
+            st.error(f"Error: {e}")
