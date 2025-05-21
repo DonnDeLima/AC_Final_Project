@@ -42,6 +42,36 @@ class VigenereCipher:
 def run():
     st.subheader("🔤 Vigenère Cipher")
 
+    with st.expander("ℹ️ About Vigenère Cipher"):
+        st.markdown("""
+        **🕰️ Brief History**  
+        The Vigenère cipher, developed in the 16th century by Blaise de Vigenère, is a classical **polyalphabetic substitution cipher**. It was considered unbreakable for centuries and nicknamed “le chiffre indéchiffrable” (the indecipherable cipher).
+    
+        **🔧 How It Works**  
+        - Uses a keyword to determine the shift for each character in the plaintext.
+        - Each character in the key determines how much to shift the corresponding plaintext character.
+        - The key is repeated to match the length of the text.
+    
+        **🧾 Pseudocode**  
+        ```
+        for i in range(len(text)):
+            shift = alphabet.index(key[i % len(key)])
+            if encrypt:
+                output_char = alphabet[(alphabet.index(text[i]) + shift) % len(alphabet)]
+            else:
+                output_char = alphabet[(alphabet.index(text[i]) - shift) % len(alphabet)]
+        ```
+    
+        **📋 Use Cases**  
+        - Historical encryption in diplomatic and military communication.
+        - Introductory cryptography education.
+        - Lightweight encryption scenarios (non-critical use).
+    
+        **⚠️ Limitations**  
+        - Vulnerable to **frequency analysis** if the key is short or reused.
+        - Not secure for modern standards.
+        """)
+
     col1, col2 = st.columns(2)
     with col1:
         text_input = st.text_area("Enter Plaintext or Ciphertext", help="Supports alphanumeric and symbols")
