@@ -50,7 +50,12 @@ def run():
     with col1:
         st.markdown("##### 🔑 Key (Paste or Generate)")
         key_input = st.text_area("Paste your RSA key here")
-
+        if key_input:
+            try:
+                public_key = RSA.import_key(public_key_str)
+                encrypted_text = rsa_encrypt(user_input_text, public_key)
+            except Exception as e:
+                st.error(f"Key import error: {e}")
         if st.button("Generate New Key Pair"):
             private_key, public_key = generate_rsa_keys()
             st.session_state['rsa_private'] = private_key.decode()
