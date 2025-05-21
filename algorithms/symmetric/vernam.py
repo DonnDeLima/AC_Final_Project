@@ -1,7 +1,7 @@
 import streamlit as st
 import random
+import base64
 
-# ---- Vernam Cipher Core Functions ----
 def text_to_decimal(text: str) -> str:
     return ''.join([f"{ord(c):03}" for c in text])
 
@@ -10,7 +10,7 @@ def decimal_to_text(decimal_str: str) -> str:
     return ''.join(chars)
 
 def generate_key(length: int) -> str:
-    return ''.join([f"{random.randint(0, 127):03}" for _ in range(length)])
+    return ''.join([f"{random.randint(0, 9):03}" for _ in range(length)])
 
 def vernam_encrypt(plaintext_dec: str, key_dec: str) -> str:
     return ''.join([f"{int(plaintext_dec[i:i+3]) ^ int(key_dec[i:i+3]):03}"
@@ -20,7 +20,12 @@ def vernam_decrypt(ciphertext_dec: str, key_dec: str) -> str:
     return ''.join([f"{int(ciphertext_dec[i:i+3]) ^ int(key_dec[i:i+3]):03}"
                     for i in range(0, len(ciphertext_dec), 3)])
 
-# ---- Streamlit Interface ----
+def decimal_str_to_bytes(decimal_str: str) -> bytes:
+    return bytes(int(decimal_str[i:i+3]) for i in range(0, len(decimal_str), 3))
+
+def bytes_to_decimal_str(b: bytes) -> str:
+    return ''.join([f"{byte:03}" for byte in b])
+
 def run():
     st.subheader("🔐 Vernam Cipher")
 
@@ -43,38 +48,65 @@ def run():
             return
 
         try:
-            text_dec = text_to_decimal(text_input)
-
             if operation == "Encrypt":
-                if not key_input.strip():
-                    key_dec = generate_key(len(text_input))
-                    key_str = decimal_to_text(key_dec)
-                else:
-                    key_dec = text_to_decimal(key_input)
-                    key_str = key_input
+                # Prepare plaintext bytes
+                plaintext_bytes = text_input.encode('utf-8')
 
-                if len(key_dec) != len(text_dec):
-                    st.text_input("⚠️ Invalid key length", value="", help="Key must match the length of the input text.")
+                # Generate or parse key
+                if not key_input.strip():
+                    key_bytes = bytes(random.randint(0, 255) for _ in range(len(plaintext_bytes)))
+                    key_display = base64.b64encode(key_bytes).decode()
+                else:
+                    # decode base64 key input
+                    try:
+                        key_bytes = base64.b64decode(key_input)
+                    except Exception:
+                        st.error("Key must be base64 encoded string.")
+                        return
+                    key_display = key_input
+
+                if len(key_bytes) != len(plaintext_bytes):
+                    st.error("Key length must match the plaintext length in bytes.")
                     return
 
-                cipher_dec = vernam_encrypt(text_dec, key_dec)
-                cipher_text = decimal_to_text(cipher_dec)  # ASCII output
-                st.success("🔐 Encrypted ASCII Text")
-                st.code(cipher_text)
-                st.text_area("🔑 Key Used", key_str, height=100)
+                # XOR encryption
+                cipher_bytes = bytes([b ^ k for b, k in zip(plaintext_bytes, key_bytes)])
+
+                # Output base64 encoded ciphertext
+                cipher_text_b64 = base64.b64encode(cipher_bytes).decode()
+
+                st.success("🔐 Encrypted Text (Base64)")
+                st.code(cipher_text_b64)
+                st.text_area("🔑 Key Used (Base64)", key_display, height=100)
 
             else:  # Decrypt
                 if not key_input.strip():
-                    st.text_input("⚠️ Key required for decryption", value="", help="You must provide the key used for encryption.")
+                    st.error("Key is required for decryption.")
                     return
-                key_dec = text_to_decimal(key_input)
-                if len(key_dec) != len(text_dec):
-                    st.text_input("⚠️ Invalid key length", value="", help="Key must match the length of the ciphertext.")
+                if not text_input.strip():
+                    st.error("Ciphertext is required for decryption.")
                     return
-                plain_dec = vernam_decrypt(text_dec, key_dec)
-                plain_text = decimal_to_text(plain_dec)
+
+                try:
+                    cipher_bytes = base64.b64decode(text_input)
+                    key_bytes = base64.b64decode(key_input)
+                except Exception:
+                    st.error("Ciphertext and Key must be base64 encoded strings.")
+                    return
+
+                if len(cipher_bytes) != len(key_bytes):
+                    st.error("Key length must match the ciphertext length.")
+                    return
+
+                plain_bytes = bytes([c ^ k for c, k in zip(cipher_bytes, key_bytes)])
+                try:
+                    plain_text = plain_bytes.decode('utf-8')
+                except UnicodeDecodeError:
+                    plain_text = plain_bytes.hex()
+                    st.warning("Plaintext contains non-UTF8 bytes; showing hex instead.")
+
                 st.success("🔓 Decrypted Text")
-                st.code(plain_text)
+                st.text_area("", plain_text, height=200)
 
         except Exception as e:
             st.error(f"Error: {e}")
