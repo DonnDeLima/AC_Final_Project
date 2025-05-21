@@ -5,7 +5,7 @@ printable = string.printable  # contains digits, letters, punctuation, etc.
 
 def encrypt(text, shift):
     return ''.join(
-        printable[(printable.index(c) + shift) % len(printable)] if c in printable else c
+        c if c == ' ' else printable[(printable.index(c) + shift) % len(printable)] if c in printable else c
         for c in text
     )
 
