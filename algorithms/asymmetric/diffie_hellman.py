@@ -42,8 +42,8 @@ def aes_decrypt(ciphertext: bytes, key: bytes) -> bytes:
 def run():
     st.subheader("🔐 Diffie-Hellman Key Exchange with AES Encryption")
 
-text_input = st.text_area("Plaintext or Ciphertext (Base64 for ciphertext)")
-file = st.file_uploader("Or upload a .txt file", type=["txt"])
+    text_input = st.text_area("Plaintext or Ciphertext (Base64 for ciphertext)")
+    file = st.file_uploader("Or upload a .txt file", type=["txt"])
 
     col1, col2 = st.columns(2)
     with col1:
