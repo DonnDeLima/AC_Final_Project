@@ -52,18 +52,18 @@ def run():
                 # Prepare plaintext bytes
                 plaintext_bytes = text_input.encode('utf-8')
 
-                # Generate or parse key
                 if not key_input.strip():
+                    # Auto-generate random key bytes
                     key_bytes = bytes(random.randint(0, 255) for _ in range(len(plaintext_bytes)))
                     key_display = base64.b64encode(key_bytes).decode()
                 else:
-                    # decode base64 key input
-                    try:
-                        key_bytes = base64.b64decode(key_input)
-                    except Exception:
-                        st.error("Key must be base64 encoded string.")
+                    # Treat user input as raw string key, encode to base64
+                    key_bytes_raw = key_input.encode('utf-8')
+                    if len(key_bytes_raw) != len(plaintext_bytes):
+                        st.error("Key length must match plaintext length (in bytes).")
                         return
-                    key_display = key_input
+                    key_bytes = key_bytes_raw
+                    key_display = base64.b64encode(key_bytes).decode()
 
                 if len(key_bytes) != len(plaintext_bytes):
                     st.error("Key length must match the plaintext length in bytes.")
