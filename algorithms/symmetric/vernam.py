@@ -15,7 +15,7 @@ def run():
     with col1:
         text_input = st.text_area("Enter Plaintext or Ciphertext", help="Enter the message for encryption or decryption")
     with col2:
-        key_input = st.text_area("Enter Key (Base64 for decryption or plain for encryption)", help="Leave blank to auto-generate during encryption")
+        key_input = st.text_area("Enter Key", help="Leave blank to auto-generate during encryption")
 
     file = st.file_uploader("Or upload a .txt file", type=["txt"])
     if file:
@@ -50,6 +50,8 @@ def run():
 
             st.success("🔐 Encrypted Text (Base64)")
             st.code(cipher_text_b64)
+            st.text_area("Key Used", key_input, height=100)
+
 
         else:  # Decrypt
             if not key_input.strip():
