@@ -86,12 +86,12 @@ def run():
     # Generate your public key and display
     your_public_key = diffie_hellman_generate_public_key(private_key)
     your_public_key_hex = hex(your_public_key)[2:]
-    your_public_key_display.text_area("Your Public Key (auto-generated)", your_public_key_hex, height=100)
-    your_private_key_display.text_area("Your Auto-Generated Private Key for Decryption", your_private_key_input, height=100)
+    your_public_key_display.text_area("Alice's Public Key (auto-generated)", your_public_key_hex, height=100)
+    your_private_key_display.text_area("Alice's Auto-Generated Private Key for Decryption", your_private_key_input, height=100)
 
     other_public_key = diffie_hellman_generate_public_key(other_private_key)
     other_public_key_hex = hex(other_public_key)[2:]
-    other_public_key_display.text_area("The Other Auto-Generated Public Key for Encryption", other_public_key_hex, height=100)
+    other_public_key_display.text_area("Bob's Auto-Generated Public Key for Encryption", other_public_key_hex, height=100)
 
     if not their_public_key_input.strip():
         st.warning("Enter their public key to proceed.")
