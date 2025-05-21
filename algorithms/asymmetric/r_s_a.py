@@ -9,20 +9,24 @@ def generate_rsa_keys():
     public_key = key.publickey().export_key()
     return private_key, public_key
 
-def rsa_encrypt(plaintext: str, public_key) -> str:
+from Crypto.PublicKey import RSA
+
+def rsa_encrypt(plaintext: str, public_key_pem: str) -> str:
     try:
+        public_key = RSA.import_key(public_key_pem)  # Convert string to key object
         cipher = PKCS1_OAEP.new(public_key)
         plaintext_bytes = plaintext.encode()
-    
+
         max_chunk_size = public_key.size_in_bytes() - 42  # for OAEP padding
-    
+
         chunks = [plaintext_bytes[i:i + max_chunk_size] for i in range(0, len(plaintext_bytes), max_chunk_size)]
         encrypted_chunks = [cipher.encrypt(chunk) for chunk in chunks]
-    
+
         encrypted_data = b''.join(encrypted_chunks)
         return base64.b64encode(encrypted_data).decode()
     except Exception as e:
         return f"Encryption error: {e}"
+
 
 def rsa_decrypt(ciphertext_b64: str, private_key_str: str) -> str:
     try:
