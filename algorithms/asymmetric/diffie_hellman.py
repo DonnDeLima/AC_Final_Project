@@ -1,119 +1,98 @@
 import streamlit as st
+import random
 import base64
-import os
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
-from Crypto.Random import get_random_bytes
+import string
 
-# Diffie-Hellman parameters (use a safe prime and generator)
-P = int(
-    "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E08"
-    "8A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD"
-    "3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E"
-    "7EC6F44C42E9A63A36210000000000090563", 16
-)
+# Large prime and generator for DH (using small example primes for demo, replace with secure ones)
+P = 0xE95E4A5F737059DC60DF5991D45029409E60FC09  # example 160-bit prime (not cryptographically secure here)
 G = 2
 
-def diffie_hellman_generate_private_key():
-    return int.from_bytes(get_random_bytes(32), 'big')
+def generate_private_key():
+    return random.randint(2, P - 2)
 
-def diffie_hellman_generate_public_key(private_key):
+def generate_public_key(private_key):
     return pow(G, private_key, P)
 
-def diffie_hellman_generate_shared_key(their_public, my_private):
-    return pow(their_public, my_private, P)
+def generate_shared_secret(their_pub, own_priv):
+    return pow(their_pub, own_priv, P)
 
-def derive_aes_key(shared_secret: int) -> bytes:
-    # Derive 16 bytes AES key from shared secret (simple truncation, can be improved)
-    key_bytes = shared_secret.to_bytes((shared_secret.bit_length() + 7) // 8, 'big')
-    return key_bytes[:16].ljust(16, b'\0')
-
-def aes_encrypt(plaintext: bytes, key: bytes) -> bytes:
-    cipher = AES.new(key, AES.MODE_CBC)
-    ct_bytes = cipher.encrypt(pad(plaintext, AES.block_size))
-    return cipher.iv + ct_bytes
-
-def aes_decrypt(ciphertext: bytes, key: bytes) -> bytes:
-    iv = ciphertext[:AES.block_size]
-    ct = ciphertext[AES.block_size:]
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    return unpad(cipher.decrypt(ct), AES.block_size)
+def xor_cipher(data: bytes, key_bytes: bytes) -> bytes:
+    return bytes([b ^ key_bytes[i % len(key_bytes)] for i, b in enumerate(data)])
 
 def run():
-    st.subheader("🔐 Diffie-Hellman Key Exchange with AES Encryption")
+    st.subheader("🔐 Diffie-Hellman Key Exchange + Symmetric Encryption (XOR)")
 
     col1, col2 = st.columns(2)
+
     with col1:
-        your_private_key_input = st.text_area(
-            "Your Private Key (hex, leave blank to auto-generate)",
-            help="Private key should be a large random hex number."
-        )
-        your_public_key_input = st.text_area(
-            "Your Public Key (hex)",
-            help="Automatically generated from your private key."
-        )
-        their_public_key_input = st.text_area(
-            "Their Public Key (hex)",
-            help="Public key from the other party."
-        )
+        # Simulate two users' private and public keys
+        priv_a = generate_private_key()
+        pub_a = generate_public_key(priv_a)
+        priv_b = generate_private_key()
+        pub_b = generate_public_key(priv_b)
+
+        st.markdown("**User A's Keys:**")
+        st.text_area("Private Key A", str(priv_a), height=40, disabled=True)
+        st.text_area("Public Key A", str(pub_a), height=40, disabled=True)
+
+        st.markdown("**User B's Keys:**")
+        st.text_area("Private Key B", str(priv_b), height=40, disabled=True)
+        st.text_area("Public Key B", str(pub_b), height=40, disabled=True)
+
+        st.markdown("---")
+
+        # User chooses which key to use as own private/public for encryption/decryption simulation
+        use_user = st.selectbox("Use keys of:", ["User A", "User B"])
+
     with col2:
-        text_input = st.text_area("Plaintext or Ciphertext (Base64 for ciphertext)")
-        file = st.file_uploader("Or upload a .txt file", type=["txt"])
+        file = st.file_uploader("Upload a .txt file (optional)", type=["txt"])
+        text_input = st.text_area("Enter Plaintext or Ciphertext", help="Supports alphanumeric and symbols")
+        if file:
+            text_input = file.read().decode("utf-8")
 
-    operation = st.radio("Operation", ["Encrypt", "Decrypt"])
+        operation = st.radio("Operation", ["Encrypt", "Decrypt"])
 
-    # Auto-generate private key if empty
-    if not your_private_key_input.strip():
-        private_key = diffie_hellman_generate_private_key()
-        your_private_key_input = hex(private_key)[2:]
+    # Determine private/public keys based on user choice
+    if use_user == "User A":
+        own_priv = priv_a
+        their_pub = pub_b
     else:
+        own_priv = priv_b
+        their_pub = pub_a
+
+    shared_secret = generate_shared_secret(their_pub, own_priv)
+    # Convert shared secret to bytes (fixed length)
+    shared_secret_bytes = shared_secret.to_bytes((shared_secret.bit_length() + 7) // 8, "big")
+    if len(shared_secret_bytes) == 0:
+        shared_secret_bytes = b'\x00'
+
+    if text_input.strip():
         try:
-            private_key = int(your_private_key_input.strip(), 16)
-        except ValueError:
-            st.error("Invalid private key format. Must be hex.")
-            return
+            if operation == "Encrypt":
+                plaintext_bytes = text_input.encode("utf-8")
+                cipher_bytes = xor_cipher(plaintext_bytes, shared_secret_bytes)
+                cipher_b64 = base64.b64encode(cipher_bytes).decode()
+                st.success("🔐 Encrypted Text (Base64)")
+                st.text_area("", cipher_b64, height=200)
+            else:
+                try:
+                    cipher_bytes = base64.b64decode(text_input)
+                except Exception:
+                    st.error("Input ciphertext must be Base64 encoded.")
+                    return
 
-    # Generate your public key
-    your_public_key = diffie_hellman_generate_public_key(private_key)
-    your_public_key_hex = hex(your_public_key)[2:]
+                plain_bytes = xor_cipher(cipher_bytes, shared_secret_bytes)
+                try:
+                    plain_text = plain_bytes.decode("utf-8")
+                except UnicodeDecodeError:
+                    plain_text = plain_bytes.hex()
+                    st.warning("Decrypted text contains non-UTF8 bytes; showing hex.")
 
-    # Display your public key
-    st.text_area("Your Public Key (auto-generated)", your_public_key_hex, height=100)
+                st.success("🔓 Decrypted Text")
+                st.text_area("", plain_text, height=200)
 
-    if not their_public_key_input.strip():
-        st.warning("Enter their public key to proceed.")
-        return
+            # Show shared secret for info/debug (base64)
+            st.info(f"Shared Secret (Base64): {base64.b64encode(shared_secret_bytes).decode()}")
 
-    try:
-        their_public_key = int(their_public_key_input.strip(), 16)
-    except ValueError:
-        st.error("Invalid their public key format. Must be hex.")
-        return
-
-    # Generate shared secret and AES key
-    shared_secret = diffie_hellman_generate_shared_key(their_public_key, private_key)
-    aes_key = derive_aes_key(shared_secret)
-
-    # Load text from file if uploaded
-    if file is not None:
-        text_input = file.read().decode("utf-8")
-
-    if not text_input.strip():
-        st.info("Enter text or upload a file to encrypt/decrypt.")
-        return
-
-    try:
-        if operation == "Encrypt":
-            plaintext_bytes = text_input.encode('utf-8')
-            ciphertext = aes_encrypt(plaintext_bytes, aes_key)
-            cipher_b64 = base64.b64encode(ciphertext).decode()
-            st.success("🔐 Encrypted Text (Base64)")
-            st.text_area("", cipher_b64, height=200)
-        else:  # Decrypt
-            ciphertext_bytes = base64.b64decode(text_input)
-            plaintext_bytes = aes_decrypt(ciphertext_bytes, aes_key)
-            plaintext = plaintext_bytes.decode('utf-8')
-            st.success("🔓 Decrypted Text")
-            st.text_area("", plaintext, height=200)
-    except Exception as e:
-        st.error(f"Error during {operation.lower()}: {e}")
+        except Exception as e:
+            st.error(f"Error: {e}")
