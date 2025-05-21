@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 
-# ---- Logic ---- #
+# ---------- Vernam Cipher Functions ----------
 def text_to_decimal(text: str) -> str:
     return ''.join([f"{ord(c):03}" for c in text])
 
@@ -13,68 +13,63 @@ def generate_key(length: int) -> str:
     return ''.join([f"{random.randint(0, 9):03}" for _ in range(length)])
 
 def vernam_encrypt(plaintext_dec: str, key_dec: str) -> str:
-    return ''.join([
-        f"{int(plaintext_dec[i:i+3]) ^ int(key_dec[i:i+3]):03}"
-        for i in range(0, len(plaintext_dec), 3)
-    ])
+    if len(plaintext_dec) != len(key_dec):
+        raise ValueError("Key length must match")
+    return ''.join([f"{int(plaintext_dec[i:i+3]) ^ int(key_dec[i:i+3]):03}"
+                    for i in range(0, len(plaintext_dec), 3)])
 
 def vernam_decrypt(ciphertext_dec: str, key_dec: str) -> str:
-    return vernam_encrypt(ciphertext_dec, key_dec)  # XOR is symmetric
+    if len(ciphertext_dec) != len(key_dec):
+        raise ValueError("Key length must match")
+    return ''.join([f"{int(ciphertext_dec[i:i+3]) ^ int(key_dec[i:i+3]):03}"
+                    for i in range(0, len(ciphertext_dec), 3)])
 
-# ---- Streamlit UI ---- #
+# ---------- Streamlit UI ----------
 def run():
-    st.subheader("🔑 Vernam Cipher")
+    st.subheader("🔐 Vernam Cipher")
 
-    mode = st.radio("Mode", ["Encrypt", "Decrypt"])
-    input_method = st.radio("Input Method", ["Manual text", "Upload .txt file"])
+    col1, col2 = st.columns(2)
 
-    text = ""
-    if input_method == "Manual text":
-        text = st.text_area("Enter your message:")
-    else:
-        uploaded_file = st.file_uploader("Upload a .txt file", type="txt")
-        if uploaded_file:
-            text = uploaded_file.read().decode("utf-8")
+    with col1:
+        input_method = st.radio("Input Method", ["Manual Input", "Upload File"])
+        if input_method == "Manual Input":
+            plaintext = st.text_area("Enter Plaintext", key="pt_input")
+        else:
+            uploaded_file = st.file_uploader("Upload .txt file", type=["txt"])
+            plaintext = uploaded_file.read().decode("utf-8") if uploaded_file else ""
 
-    key_input = st.text_input("Optional: Provide key (leave blank to auto-generate):")
+    with col2:
+        key = st.text_input("Enter Key (same length as plaintext)")
 
-    if st.button("Run Vernam Cipher"):
-        if not text:
-            st.warning("Please provide input text.")
-            return
+    # Encrypt button
+    if st.button("Encrypt"):
+        if not plaintext:
+            st.error("Plaintext is empty.")
+        elif not key:
+            st.error("Key is empty.")
+        else:
+            try:
+                pt_dec = text_to_decimal(plaintext)
+                key_dec = text_to_decimal(key)
+                ciphertext_dec = vernam_encrypt(pt_dec, key_dec)
+                st.success("Encryption successful!")
+                st.text_area("Ciphertext (decimal)", ciphertext_dec, height=200)
+            except ValueError as e:
+                st.tooltip(str(e))
 
-        dec_text = text_to_decimal(text)
-
-        if mode == "Encrypt":
-            # Pad or generate key
-            if key_input:
-                key_dec = text_to_decimal(key_input)
-                if len(key_dec) < len(dec_text):
-                    key_dec += generate_key((len(dec_text) - len(key_dec)) // 3)
-                key_dec = key_dec[:len(dec_text)]
-            else:
-                key_dec = generate_key(len(dec_text) // 3)
-
-            cipher_dec = vernam_encrypt(dec_text, key_dec)
-            cipher_text = decimal_to_text(cipher_dec)
-
-            st.code(f"Cipher Text: {cipher_text}")
-            st.text_area("Generated Key (save this to decrypt):", decimal_to_text(key_dec), height=100)
-            st.caption("You may copy and save this key text for decryption.")
-
-        else:  # Decrypt
-            if not key_input:
-                st.error("Decryption requires the original key.")
-                return
-
-            key_dec = text_to_decimal(key_input)
-            cipher_dec = text_to_decimal(text)
-
-            if len(cipher_dec) != len(key_dec):
-                st.error("Key length must match encrypted message.")
-                return
-
-            plain_dec = vernam_decrypt(cipher_dec, key_dec)
-            plain_text = decimal_to_text(plain_dec)
-
-            st.code(f"Decrypted Text: {plain_text}")
+    # Decrypt button
+    if st.button("Decrypt"):
+        if not plaintext:
+            st.error("Ciphertext is empty.")
+        elif not key:
+            st.error("Key is empty.")
+        else:
+            try:
+                ct_dec = plaintext
+                key_dec = text_to_decimal(key)
+                decrypted_dec = vernam_decrypt(ct_dec, key_dec)
+                decrypted_text = decimal_to_text(decrypted_dec)
+                st.success("Decryption successful!")
+                st.text_area("Decrypted Text", decrypted_text, height=200)
+            except ValueError as e:
+                st.tooltip(str(e))
