@@ -49,13 +49,18 @@ def run():
             "Input Your Private Key for Decryption (hex)",
             help="Private key should be a large random hex number."
         )
-        your_private_key_display = st.empty()
-        your_public_key_display = st.empty()
     with col2:
         their_public_key_input = st.text_area(
             "Input Their Public Key for Encryption (hex)",
             help="Public key from the other party."
         )
+        
+    st.subheader("For Simulation")
+    col1, col2 = st.columns(2)
+    with col1:
+        your_private_key_display = st.empty()
+        your_public_key_display = st.empty()
+    with col2:
         other_private_key_display = st.empty()
         other_public_key_display = st.empty()
 
@@ -78,7 +83,6 @@ def run():
             st.error("Invalid private key format. Must be hex.")
             return
 
-    st.subheader("For Simulation")
     # Generate your public key and display
     your_public_key = diffie_hellman_generate_public_key(private_key)
     your_public_key_hex = hex(your_public_key)[2:]
