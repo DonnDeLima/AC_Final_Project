@@ -49,6 +49,7 @@ def run():
             "Input Your Private Key for Decryption (hex)",
             help="Private key should be a large random hex number."
         )
+        your_private_key_display = st.empty()
         your_public_key_display = st.empty()
     with col2:
         their_public_key_input = st.text_area(
