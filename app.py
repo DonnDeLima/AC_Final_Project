@@ -38,7 +38,7 @@ with st.sidebar.expander("📎 Hashing Algorithms", expanded=False):
     if st.button("SHA-256"):
         st.session_state.selected_algorithm = "sha256"
     if st.button("SHA-3"):
-        st.session_state.selected_algorithm = "sha3
+        st.session_state.selected_algorithm = "sha3"
 
 # ------------------ Main Panel ------------------ #
 if selected_algorithm == "caesar":
