@@ -46,13 +46,13 @@ def run():
     col1, col2 = st.columns(2)
     with col1:
         your_private_key_input = st.text_area(
-            "Your Private Key (hex, leave blank to auto-generate)",
+            "Input Your Private Key for Decryption (hex)",
             help="Private key should be a large random hex number."
         )
         your_public_key_display = st.empty()
     with col2:
         their_public_key_input = st.text_area(
-            "Their Public Key (hex)",
+            "Input Their Public Key for Encryption (hex)",
             help="Public key from the other party."
         )
         other_private_key_display = st.empty()
@@ -77,15 +77,17 @@ def run():
             st.error("Invalid private key format. Must be hex.")
             return
 
+    st.subheader("For Simulation")
     # Generate your public key and display
     your_public_key = diffie_hellman_generate_public_key(private_key)
     your_public_key_hex = hex(your_public_key)[2:]
     your_public_key_display.text_area("Your Public Key (auto-generated)", your_public_key_hex, height=100)
+    your_private_key_display.text_area("Your Auto-Generated Private Key for Decryption", your_public_key_hex, height=100)
 
     # Generate other party's public key and display
     other_public_key = diffie_hellman_generate_public_key(other_private_key)
     other_public_key_hex = hex(other_public_key)[2:]
-    other_public_key_display.text_area("Other Party Public Key (auto-generated)", other_public_key_hex, height=100)
+    other_public_key_display.text_area("The Other Auto-Generated Public Key for Encryption", other_public_key_hex, height=100)
 
     if not their_public_key_input.strip():
         st.warning("Enter their public key to proceed.")
