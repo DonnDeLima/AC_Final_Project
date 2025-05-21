@@ -10,7 +10,7 @@ def decimal_to_text(decimal_str: str) -> str:
     return ''.join(chars)
 
 def generate_key(length: int) -> str:
-    return ''.join([f"{random.randint(0, 9):03}" for _ in range(length)])
+    return ''.join([f"{random.randint(0, 127):03}" for _ in range(length)])
 
 def vernam_encrypt(plaintext_dec: str, key_dec: str) -> str:
     return ''.join([f"{int(plaintext_dec[i:i+3]) ^ int(key_dec[i:i+3]):03}"
