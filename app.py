@@ -28,7 +28,7 @@ with st.sidebar.expander("🔀 Asymmetric Algorithms", expanded=False):
     if st.button("RSA"):
         st.session_state.selected_algorithm = "rsa"
     if st.button("Diffie-Hellman"):
-        st.session_state.selected_algorithm = "diffie_hellm
+        st.session_state.selected_algorithm = "diffie_hellman"
 
 with st.sidebar.expander("📎 Hashing Algorithms", expanded=False):
     if st.button("SHA-1"):
