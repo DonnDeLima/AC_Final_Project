@@ -32,12 +32,12 @@ with st.sidebar.expander("🔀 Asymmetric Algorithms", expanded=False):
 with st.sidebar.expander("📎 Hashing Algorithms", expanded=False):
     if st.button("SHA-1"):
         st.session_state.selected_algorithm = "sha1"
-    if st.button("MD5"):
-        st.session_state.selected_algorithm = "md5"
     if st.button("SHA-256"):
         st.session_state.selected_algorithm = "sha256"
     if st.button("SHA-3"):
         st.session_state.selected_algorithm = "sha3"
+    if st.button("MD5"):
+        st.session_state.selected_algorithm = "md5"
 
 # ------------------ Main Panel ------------------ #
 selected_algorithm = st.session_state.selected_algorithm
