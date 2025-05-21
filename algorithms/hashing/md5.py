@@ -7,12 +7,24 @@ def md5_hash(text):
 def run():
     st.subheader("🔐 MD5 Hasher")
 
-    text = st.text_area("Enter Text")
+    text_input = st.text_area("Enter Text", help="Type your message to hash")
 
-    if st.button("Generate MD5 Hash"):
-        result = md5_hash(text)
-        st.success("MD5 Hash:")
+    file = st.file_uploader("Or upload a .txt file", type=["txt"])
+
+    if file:
+        try:
+            text_input = file.read().decode("utf-8")
+        except Exception:
+            st.error("Uploaded file must be a valid UTF-8 text file.")
+            return
+
+    if not text_input.strip():
+        st.info("Awaiting text input or file upload...")
+        return
+
+    try:
+        result = md5_hash(text_input)
+        st.success("🧾 MD5 Hash")
         st.code(result)
-
-if __name__ == "__main__":
-    run()
+    except Exception as e:
+        st.error(f"Hashing failed: {e}")
