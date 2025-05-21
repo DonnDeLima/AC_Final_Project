@@ -60,6 +60,7 @@ or include simplified pseudocode)
 ![HASH](https://github.com/user-attachments/assets/f9495db2-36a7-4c86-bb19-fc75ce4adbd4)
 
 **Future Enhancements**
+
 To further improve the application, the following features are planned:
  
 - UI/UX Improvements: Refine the user interface and experience to make the app more intuitive, visually appealing, and accessible for all users.
