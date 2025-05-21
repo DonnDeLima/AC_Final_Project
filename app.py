@@ -8,33 +8,37 @@ from algorithms.hashing import sha1, sha3, sha256, md5
 st.set_page_config(page_title="Cryptography App", layout="wide")
 st.title("🔐 Applied Cryptography Application")
 
+# ------------------ Sidebar State Setup ------------------ #
+f "selected_algorithm" not in st.session_state:
+    st.session_state.selected_algorithm = None
+
 # ------------------ Sidebar (Accordion Style) ------------------ #
 st.sidebar.title("🧪 Choose a Cryptographic Algorithm")
 selected_algorithm = None
 
 with st.sidebar.expander("🔁 Symmetric Algorithms", expanded=False):
     if st.button("Caesar Cipher"):
-        selected_algorithm = "caesar"
+        st.session_state.selected_algorithm = "caesar"
     if st.button("Vernam Cipher"):
-        selected_algorithm = "vernam"
+        st.session_state.selected_algorithm = "vernam"
     if st.button("Vigenere Cipher"):
-        selected_algorithm = "vigenere"
+        st.session_state.selected_algorithm = "vigenere"
 
 with st.sidebar.expander("🔀 Asymmetric Algorithms", expanded=False):
     if st.button("RSA"):
-        selected_algorithm = "rsa"
+        st.session_state.selected_algorithm = "rsa"
     if st.button("Diffie-Hellman"):
-        selected_algorithm = "diffie_hellman"
+        st.session_state.selected_algorithm = "diffie_hellm
 
 with st.sidebar.expander("📎 Hashing Algorithms", expanded=False):
     if st.button("SHA-1"):
-        selected_algorithm = "sha1"
+        st.session_state.selected_algorithm = "sha1"
     if st.button("MD5"):
-        selected_algorithm = "md5"
+        st.session_state.selected_algorithm = "md5"
     if st.button("SHA-256"):
-        selected_algorithm = "sha256"
+        st.session_state.selected_algorithm = "sha256"
     if st.button("SHA-3"):
-        selected_algorithm = "sha3"
+        st.session_state.selected_algorithm = "sha3
 
 # ------------------ Main Panel ------------------ #
 if selected_algorithm == "caesar":
