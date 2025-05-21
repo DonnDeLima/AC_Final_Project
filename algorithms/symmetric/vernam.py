@@ -77,7 +77,7 @@ def run():
 
                 st.success("🔐 Encrypted Text (Base64)")
                 st.code(cipher_text_b64)
-                st.text_area("🔑 Key Used (Base64)", key_display, height=100)
+                st.text_area("🔑 Key Used (Base64)", key_input, height=100)
 
             else:  # Decrypt
                 if not key_input.strip():
