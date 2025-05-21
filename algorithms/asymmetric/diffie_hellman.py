@@ -14,7 +14,7 @@ P = int(
 G = 2
 
 def diffie_hellman_generate_private_key():
-    return int.from_bytes(get_random_bytes(32), 'big')
+    return int.from_bytes(get_random_bytes(32), 'big') % (P-2) + 1  # private key in [1, P-2]
 
 def diffie_hellman_generate_public_key(private_key):
     return pow(G, private_key, P)
@@ -40,111 +40,108 @@ def aes_decrypt(ciphertext: bytes, key: bytes) -> bytes:
 def run():
     st.subheader("🔐 Diffie-Hellman Key Exchange with AES Encryption")
 
+    # Input plaintext/ciphertext
     text_input = st.text_area("Plaintext or Ciphertext (Base64 for ciphertext)")
     file = st.file_uploader("Or upload a .txt file", type=["txt"])
+    if file:
+        text_input = file.read().decode("utf-8")
 
+    # Columns for Alice and Bob keys
     col1, col2 = st.columns(2)
+
     with col1:
-        your_private_key_input = st.text_area(
-            "Input Your Private Key for Decryption (hex)",
-            help="Private key should be a large random hex number."
-        )
+        st.markdown("### Alice's Keys")
+        if st.button("Generate Alice's Key Pair"):
+            alice_private_key = diffie_hellman_generate_private_key()
+            alice_public_key = diffie_hellman_generate_public_key(alice_private_key)
+            st.session_state['alice_private'] = alice_private_key
+            st.session_state['alice_public'] = alice_public_key
+            st.success("Alice's keys generated")
+
+        alice_private_key = st.text_area("Alice's Private Key (hex)", 
+                                         hex(st.session_state.get('alice_private', 0))[2:])
+        alice_public_key = st.text_area("Alice's Public Key (hex)", 
+                                        hex(st.session_state.get('alice_public', 0))[2:])
+
     with col2:
-        their_public_key_input = st.text_area(
-            "Input Their Public Key for Encryption (hex)",
-            help="Public key from the other party."
-        )
+        st.markdown("### Bob's Keys")
+        if st.button("Generate Bob's Key Pair"):
+            bob_private_key = diffie_hellman_generate_private_key()
+            bob_public_key = diffie_hellman_generate_public_key(bob_private_key)
+            st.session_state['bob_private'] = bob_private_key
+            st.session_state['bob_public'] = bob_public_key
+            st.success("Bob's keys generated")
+
+        bob_private_key = st.text_area("Bob's Private Key (hex)", 
+                                       hex(st.session_state.get('bob_private', 0))[2:])
+        bob_public_key = st.text_area("Bob's Public Key (hex)", 
+                                     hex(st.session_state.get('bob_public', 0))[2:])
 
     st.markdown("---")
-    st.markdown("### Key Generation (Simulation)")
+    operation = st.radio("Operation", ["Encrypt", "Decrypt"])
 
-    col1, col2 = st.columns(2)
-    with col1:
-        your_private_key_display = st.empty()
-        your_public_key_display = st.empty()
-    with col2:
-        other_private_key_display = st.empty()
-        other_public_key_display = st.empty()
-
-    # Generate keys on button click
-    if st.button("Generate New Key Pair"):
-        private_key = diffie_hellman_generate_private_key()
-        public_key = diffie_hellman_generate_public_key(private_key)
-        other_private_key = diffie_hellman_generate_private_key()
-        other_public_key = diffie_hellman_generate_public_key(other_private_key)
-
-        st.session_state['your_private_key'] = hex(private_key)[2:]
-        st.session_state['your_public_key'] = hex(public_key)[2:]
-        st.session_state['other_private_key'] = hex(other_private_key)[2:]
-        st.session_state['other_public_key'] = hex(other_public_key)[2:]
-
-    # Load keys from session state or from inputs
-    your_private_key_input = your_private_key_input.strip() or st.session_state.get('your_private_key', '')
-    their_public_key_input = their_public_key_input.strip() or st.session_state.get('other_public_key', '')
-    other_private_key = int(st.session_state.get('other_private_key', '0'), 16) if 'other_private_key' in st.session_state else None
-
+    # Validate keys input
     try:
-        private_key = int(your_private_key_input, 16) if your_private_key_input else None
+        if alice_private_key.strip():
+            alice_private = int(alice_private_key.strip(), 16)
+        else:
+            alice_private = None
+        if bob_public_key.strip():
+            bob_public = int(bob_public_key.strip(), 16)
+        else:
+            bob_public = None
+
+        if bob_private_key.strip():
+            bob_private = int(bob_private_key.strip(), 16)
+        else:
+            bob_private = None
+        if alice_public_key.strip():
+            alice_public = int(alice_public_key.strip(), 16)
+        else:
+            alice_public = None
     except ValueError:
-        st.error("Invalid your private key format. Must be hex.")
+        st.error("Invalid hex key format.")
         return
-
-    your_public_key = diffie_hellman_generate_public_key(private_key) if private_key else None
-
-    if your_public_key:
-        your_public_key_display.text_area("Your Public Key", hex(your_public_key)[2:], height=100)
-    if your_private_key_input:
-        your_private_key_display.text_area("Your Private Key", your_private_key_input, height=100)
-
-    if 'other_public_key' in st.session_state:
-        other_public_key_display.text_area("Other Party's Public Key", st.session_state['other_public_key'], height=100)
-    if 'other_private_key' in st.session_state:
-        other_private_key_display.text_area("Other Party's Private Key (hidden)", st.session_state['other_private_key'], height=100)
-
-    if not your_private_key_input or not their_public_key_input:
-        st.warning("Please enter/generate your private key and their public key to proceed.")
-        return
-
-    try:
-        their_public_key = int(their_public_key_input, 16)
-    except ValueError:
-        st.error("Invalid their public key format. Must be hex.")
-        return
-
-    # Load text from file if uploaded
-    if file is not None:
-        text_input = file.read().decode("utf-8")
 
     if not text_input.strip():
         st.info("Enter text or upload a file to encrypt/decrypt.")
         return
 
-    operation = st.radio("Operation", ["Encrypt", "Decrypt"])
+    if operation == "Encrypt":
+        if alice_private is None or bob_public is None:
+            st.warning("Alice's private key and Bob's public key are required for encryption.")
+            return
 
-    if st.button("Run Cipher"):
+        shared_secret = diffie_hellman_generate_shared_key(bob_public, alice_private)
+        aes_key = derive_aes_key(shared_secret)
+
+        ciphertext = aes_encrypt(text_input.encode('utf-8'), aes_key)
+        cipher_b64 = base64.b64encode(ciphertext).decode()
+        st.success("🔐 Encrypted Text (Base64)")
+        st.text_area("", cipher_b64, height=200)
+
+    else:  # Decrypt
+        if bob_private is None or alice_public is None:
+            st.warning("Bob's private key and Alice's public key are required for decryption.")
+            return
+
         try:
-            # Generate shared secret and derive AES key
-            shared_secret = diffie_hellman_generate_shared_key(their_public_key, private_key)
-            aes_key = derive_aes_key(shared_secret)
-
-            if operation == "Encrypt":
-                plaintext_bytes = text_input.encode('utf-8')
-                ciphertext = aes_encrypt(plaintext_bytes, aes_key)
-                cipher_b64 = base64.b64encode(ciphertext).decode()
-                st.success("🔐 Encrypted Text (Base64)")
-                st.text_area("", cipher_b64, height=200)
-            else:  # Decrypt
-                try:
-                    ciphertext_b64_clean = "".join(text_input.strip().split())
-                    ciphertext_bytes = base64.b64decode(ciphertext_b64_clean)
-                    plaintext_bytes = aes_decrypt(ciphertext_bytes, aes_key)
-                    plaintext = plaintext_bytes.decode('utf-8')
-                    st.success("🔓 Decrypted Text")
-                    st.text_area("", plaintext, height=200)
-                except (ValueError, base64.binascii.Error) as e:
-                    st.error(f"Invalid ciphertext or padding error: {e}")
+            ciphertext_b64_clean = "".join(text_input.strip().split())
+            ciphertext_bytes = base64.b64decode(ciphertext_b64_clean)
         except Exception as e:
-            st.error(f"Error during {operation.lower()}: {e}")
+            st.error(f"Invalid Base64 ciphertext: {e}")
+            return
+
+        shared_secret = diffie_hellman_generate_shared_key(alice_public, bob_private)
+        aes_key = derive_aes_key(shared_secret)
+
+        try:
+            plaintext_bytes = aes_decrypt(ciphertext_bytes, aes_key)
+            plaintext = plaintext_bytes.decode('utf-8')
+            st.success("🔓 Decrypted Text")
+            st.text_area("", plaintext, height=200)
+        except Exception as e:
+            st.error(f"Decryption failed: {e}")
 
 if __name__ == "__main__":
     run()
