@@ -56,7 +56,7 @@ def run():
             alice_public_key = diffie_hellman_generate_public_key(alice_private_key)
             st.session_state['alice_private'] = alice_private_key
             st.session_state['alice_public'] = alice_public_key
-            st.success("Alice's keys generated")
+            st.toast("Alice's keys generated")
 
         alice_private_key = st.text_area("Alice's Private Key (hex)", 
                                          hex(st.session_state.get('alice_private', 0))[2:])
@@ -70,7 +70,7 @@ def run():
             bob_public_key = diffie_hellman_generate_public_key(bob_private_key)
             st.session_state['bob_private'] = bob_private_key
             st.session_state['bob_public'] = bob_public_key
-            st.success("Bob's keys generated")
+            st.toast("Bob's keys generated")
 
         bob_private_key = st.text_area("Bob's Private Key (hex)", 
                                        hex(st.session_state.get('bob_private', 0))[2:])
