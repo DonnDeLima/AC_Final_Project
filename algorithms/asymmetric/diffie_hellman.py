@@ -42,45 +42,45 @@ def run():
 
     with st.expander("ℹ️ About RSA Algorithm"):
         st.markdown("""
-        **🕰️ Brief History**  
-        RSA was introduced in 1977 by **Rivest, Shamir, and Adleman**. It's one of the first public-key cryptosystems and is widely used for secure data transmission.
-    
-        **🔧 How It Works**  
-        - **Key Generation**:
-            1. Choose two large prime numbers `p` and `q`
-            2. Compute `n = p * q` and `φ(n) = (p - 1)(q - 1)`
-            3. Choose public exponent `e` (commonly 65537)
-            4. Compute private key `d` such that `(d * e) % φ(n) = 1`
-        - **Encryption**: `cipher = (message^e) mod n`
-        - **Decryption**: `message = (cipher^d) mod n`
-    
-        **🧾 Pseudocode**
-        ```
-        Generate Keys:
-            Choose large primes p, q
-            n = p * q
-            phi = (p - 1) * (q - 1)
-            e = choose coprime with phi
-            d = modular_inverse(e, phi)
-            Public key: (e, n), Private key: (d, n)
-    
-        Encrypt(message, e, n):
-            return (message ^ e) mod n
-    
-        Decrypt(cipher, d, n):
-            return (cipher ^ d) mod n
-        ```
-    
-        **📋 Use Cases**
-        - Secure data transmission
-        - Digital signatures
-        - Key exchange
-        - SSL/TLS in web browsers
-    
-        **⚠️ Limitations**
-        - Slower than symmetric encryption algorithms
-        - Requires large key sizes (2048+ bits) for modern security
-        """)
+            **🕰️ Brief History**  
+            RSA was introduced in 1977 by **Rivest, Shamir, and Adleman**. It's one of the first public-key cryptosystems and is widely used for secure data transmission.
+        
+            **🔧 How It Works**  
+            - **Key Generation**:
+                1. Choose two large prime numbers `p` and `q`
+                2. Compute `n = p * q` and `φ(n) = (p - 1)(q - 1)`
+                3. Choose public exponent `e` (commonly 65537)
+                4. Compute private key `d` such that `(d * e) % φ(n) = 1`
+            - **Encryption**: `cipher = (message^e) mod n`
+            - **Decryption**: `message = (cipher^d) mod n`
+        
+            **🧾 Pseudocode**
+            ```
+            Generate Keys:
+                Choose large primes p, q
+                n = p * q
+                phi = (p - 1) * (q - 1)
+                e = choose coprime with phi
+                d = modular_inverse(e, phi)
+                Public key: (e, n), Private key: (d, n)
+        
+            Encrypt(message, e, n):
+                return (message ^ e) mod n
+        
+            Decrypt(cipher, d, n):
+                return (cipher ^ d) mod n
+            ```
+        
+            **📋 Use Cases**
+            - Secure data transmission
+            - Digital signatures
+            - Key exchange
+            - SSL/TLS in web browsers
+        
+            **⚠️ Limitations**
+            - Slower than symmetric encryption algorithms
+            - Requires large key sizes (2048+ bits) for modern security
+            """)
 
 
     # Input plaintext/ciphertext
