@@ -82,6 +82,7 @@ def run():
     other_public_key_hex = hex(other_public_key)[2:]
 
     # Display your public key
+    st.text_area("Your Private Key (auto-generated)", your_public_key_hex, height=100)
     st.text_area("Your Public Key (auto-generated)", your_public_key_hex, height=100)
     st.text_area("Other Public Key (auto-generated)", other_public_key_hex, height=100)
     
