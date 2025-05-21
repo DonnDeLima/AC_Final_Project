@@ -124,13 +124,24 @@ def run():
                 st.text_area("", cipher_b64, height=200)
             else:  # Decrypt
                 try:
-                    ciphertext_bytes = bytes.fromhex(text_input.strip())
+                    # Clean Base64 input (remove spaces/newlines)
+                    ciphertext_b64_clean = "".join(text_input.strip().split())
+                    ciphertext_bytes = base64.b64decode(ciphertext_b64_clean)
+                
+                    # Parse keys from hex strings before use (already done in your code)
+                
+                    # Generate shared secret and AES key
+                    shared_secret = diffie_hellman_generate_shared_key(their_public_key, private_key)
+                    aes_key = derive_aes_key(shared_secret)
+                
+                    # Decrypt
                     plaintext_bytes = aes_decrypt(ciphertext_bytes, aes_key)
                     plaintext = plaintext_bytes.decode('utf-8')
                     st.success("🔓 Decrypted Text")
                     st.text_area("", plaintext, height=200)
-                except Exception as e:
-                    st.error(f"Error during decrypt: {e}")
+                
+                except (ValueError, base64.binascii.Error) as e:
+                    st.error(f"Invalid ciphertext or padding error: {e}")
         except Exception as e:
             st.error(f"Error during {operation.lower()}: {e}")
 if __name__ == "__main__":
