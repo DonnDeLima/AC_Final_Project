@@ -6,7 +6,6 @@ def md5_hash(text):
 
 def run():
     st.subheader("🔐 MD5 Hasher")
-
     text_input = st.text_area("Enter Text", help="Type your message to hash")
 
     file = st.file_uploader("Or upload a .txt file", type=["txt"])
