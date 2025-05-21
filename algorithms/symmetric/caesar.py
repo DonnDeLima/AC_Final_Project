@@ -27,12 +27,8 @@ def run():
         text_input = file.read().decode("utf-8")
 
     operation = st.radio("Operation", ["Encrypt", "Decrypt"])
-    run_button = st.button("Run Caesar Cipher")
 
-    if run_button:
-        if not text_input.strip():
-            st.warning("Input text is required.")
-            return
+    if text_input.strip():
         try:
             result = encrypt(text_input, shift) if operation == "Encrypt" else decrypt(text_input, shift)
             st.success("🔐 Result")
