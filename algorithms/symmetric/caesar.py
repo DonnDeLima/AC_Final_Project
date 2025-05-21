@@ -16,29 +16,29 @@ def run():
     st.subheader("🔐 Caesar Cipher")
 
     with st.expander("ℹ️ What is the Caesar Cipher?"):
-    st.markdown("""
-    **Caesar Cipher Overview**
-
-    - **History**: One of the oldest known ciphers, used by Julius Caesar to send military messages.
-    - **Mechanism**: Shifts each character in the text by a fixed number (the "shift key") within a set of characters.
-    - **Pseudocode**:
-      ```
-      For each character in the input:
-          If character is in the character set:
-              Find its index.
-              Add the shift (or subtract for decryption).
-              Wrap around if needed (modulo length of set).
-              Replace character.
-          Else:
-              Leave as is.
-      ```
-    - **Use Cases**:
-      - Simple obfuscation
-      - Educational demonstrations of classical encryption
-      - Not suitable for modern secure communication
-
-    - **Character Set**: This version supports all printable characters (letters, digits, punctuation, etc.).
-    """)
+        st.markdown("""
+        **Caesar Cipher Overview**
+    
+        - **History**: One of the oldest known ciphers, used by Julius Caesar to send military messages.
+        - **Mechanism**: Shifts each character in the text by a fixed number (the "shift key") within a set of characters.
+        - **Pseudocode**:
+          ```
+          For each character in the input:
+              If character is in the character set:
+                  Find its index.
+                  Add the shift (or subtract for decryption).
+                  Wrap around if needed (modulo length of set).
+                  Replace character.
+              Else:
+                  Leave as is.
+          ```
+        - **Use Cases**:
+          - Simple obfuscation
+          - Educational demonstrations of classical encryption
+          - Not suitable for modern secure communication
+    
+        - **Character Set**: This version supports all printable characters (letters, digits, punctuation, etc.).
+        """)
 
     col1, col2 = st.columns(2)
     with col1:
