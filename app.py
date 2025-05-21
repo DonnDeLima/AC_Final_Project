@@ -1,7 +1,7 @@
 import streamlit as st
 
 from algorithms.symmetric import caesar, vernam, vigenere
-from algorithms.asymmetric import r_s_a, diffie_hellman
+from algorithms.asymmetric import r_s_a, diffie_hellman, dh
 from algorithms.hashing import sha1, sha3, sha256, md5
 
 # ------------------ Page Setup ------------------ #
