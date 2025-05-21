@@ -67,27 +67,25 @@ def run():
     operation = st.radio("Operation", ["Encrypt", "Decrypt"])
 
     # Auto-generate your private key if empty
-    if not your_private_key_input.strip():
-        private_key = diffie_hellman_generate_private_key()
-        your_private_key_input = hex(private_key)[2:]
-        # Generate other party's private key for simulation
-        other_private_key = diffie_hellman_generate_private_key()
-        other_private_key_hex = hex(other_private_key)[2:]
-    else:
-        try:
-            private_key = int(your_private_key_input.strip(), 16)
-            # Also generate other party's private key for simulation
-            other_private_key = diffie_hellman_generate_private_key()
-            other_private_key_hex = hex(other_private_key)[2:]
-        except ValueError:
-            st.error("Invalid private key format. Must be hex.")
-            return
+        if "private_key" not in st.session_state:
+            st.session_state.private_key = diffie_hellman_generate_private_key()
+            st.session_state.public_key = diffie_hellman_generate_public_key(st.session_state.private_key)
+        
+        if not your_private_key_input.strip():
+            your_private_key_input = hex(st.session_state.private_key)[2:]
+        else:
+            try:
+                st.session_state.private_key = int(your_private_key_input.strip(), 16)
+                st.session_state.public_key = diffie_hellman_generate_public_key(st.session_state.private_key)
+            except ValueError:
+                st.error("Invalid private key format. Must be hex.")
+                return
 
     # Generate your public key and display
     your_public_key = diffie_hellman_generate_public_key(private_key)
     your_public_key_hex = hex(your_public_key)[2:]
     your_public_key_display.text_area("Your Public Key (auto-generated)", your_public_key_hex, height=100)
-    your_private_key_display.text_area("Your Auto-Generated Private Key for Decryption", your_public_key_hex, height=100)
+    your_private_key_display.text_area("Your Auto-Generated Private Key for Decryption", your_private_key_hex, height=100)
 
     other_public_key = diffie_hellman_generate_public_key(other_private_key)
     other_public_key_hex = hex(other_public_key)[2:]
