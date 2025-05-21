@@ -54,8 +54,10 @@ def run():
             "Input Their Public Key for Encryption (hex)",
             help="Public key from the other party."
         )
-        
-    st.subheader("For Simulation")
+
+    st.markdown("---")
+    st.markdown("### Key Generation (Simulation)")
+
     col1, col2 = st.columns(2)
     with col1:
         your_private_key_display = st.empty()
@@ -64,40 +66,47 @@ def run():
         other_private_key_display = st.empty()
         other_public_key_display = st.empty()
 
-    operation = st.radio("Operation", ["Encrypt", "Decrypt"])
-
-    # Auto-generate your private key if empty
-    if not your_private_key_input.strip():
+    # Generate keys on button click
+    if st.button("Generate New Key Pair"):
         private_key = diffie_hellman_generate_private_key()
-        your_private_key_input = hex(private_key)[2:]
-        # Generate other party's private key for simulation
+        public_key = diffie_hellman_generate_public_key(private_key)
         other_private_key = diffie_hellman_generate_private_key()
-        other_private_key_hex = hex(other_private_key)[2:]
-    else:
-        try:
-            private_key = int(your_private_key_input.strip(), 16)
-            # Also generate other party's private key for simulation
-            other_private_key = diffie_hellman_generate_private_key()
-            other_private_key_hex = hex(other_private_key)[2:]
-        except ValueError:
-            st.error("Invalid private key format. Must be hex.")
-            return
+        other_public_key = diffie_hellman_generate_public_key(other_private_key)
 
-    # Generate your public key and display
-    your_public_key = diffie_hellman_generate_public_key(private_key)
-    your_public_key_hex = hex(your_public_key)[2:]
-    your_public_key_display.text_area("Alice's Public Key (auto-generated)", your_public_key_hex, height=100)
-    your_private_key_display.text_area("Alice's Auto-Generated Private Key for Decryption", your_private_key_input, height=100)
+        st.session_state['your_private_key'] = hex(private_key)[2:]
+        st.session_state['your_public_key'] = hex(public_key)[2:]
+        st.session_state['other_private_key'] = hex(other_private_key)[2:]
+        st.session_state['other_public_key'] = hex(other_public_key)[2:]
 
-    other_public_key = diffie_hellman_generate_public_key(other_private_key)
-    other_public_key_hex = hex(other_public_key)[2:]
-    other_public_key_display.text_area("Bob's Auto-Generated Public Key for Encryption", other_public_key_hex, height=100)
+    # Load keys from session state or from inputs
+    your_private_key_input = your_private_key_input.strip() or st.session_state.get('your_private_key', '')
+    their_public_key_input = their_public_key_input.strip() or st.session_state.get('other_public_key', '')
+    other_private_key = int(st.session_state.get('other_private_key', '0'), 16) if 'other_private_key' in st.session_state else None
 
-    if not their_public_key_input.strip():
-        st.warning("Enter their public key to proceed.")
-        return
     try:
-        their_public_key = int(their_public_key_input.strip(), 16)
+        private_key = int(your_private_key_input, 16) if your_private_key_input else None
+    except ValueError:
+        st.error("Invalid your private key format. Must be hex.")
+        return
+
+    your_public_key = diffie_hellman_generate_public_key(private_key) if private_key else None
+
+    if your_public_key:
+        your_public_key_display.text_area("Your Public Key", hex(your_public_key)[2:], height=100)
+    if your_private_key_input:
+        your_private_key_display.text_area("Your Private Key", your_private_key_input, height=100)
+
+    if 'other_public_key' in st.session_state:
+        other_public_key_display.text_area("Other Party's Public Key", st.session_state['other_public_key'], height=100)
+    if 'other_private_key' in st.session_state:
+        other_private_key_display.text_area("Other Party's Private Key (hidden)", st.session_state['other_private_key'], height=100)
+
+    if not your_private_key_input or not their_public_key_input:
+        st.warning("Please enter/generate your private key and their public key to proceed.")
+        return
+
+    try:
+        their_public_key = int(their_public_key_input, 16)
     except ValueError:
         st.error("Invalid their public key format. Must be hex.")
         return
@@ -109,6 +118,8 @@ def run():
     if not text_input.strip():
         st.info("Enter text or upload a file to encrypt/decrypt.")
         return
+
+    operation = st.radio("Operation", ["Encrypt", "Decrypt"])
 
     if st.button("Run Cipher"):
         try:
@@ -124,25 +135,16 @@ def run():
                 st.text_area("", cipher_b64, height=200)
             else:  # Decrypt
                 try:
-                    # Clean Base64 input (remove spaces/newlines)
                     ciphertext_b64_clean = "".join(text_input.strip().split())
                     ciphertext_bytes = base64.b64decode(ciphertext_b64_clean)
-                
-                    # Parse keys from hex strings before use (already done in your code)
-                
-                    # Generate shared secret and AES key
-                    shared_secret = diffie_hellman_generate_shared_key(their_public_key, private_key)
-                    aes_key = derive_aes_key(shared_secret)
-                
-                    # Decrypt
                     plaintext_bytes = aes_decrypt(ciphertext_bytes, aes_key)
                     plaintext = plaintext_bytes.decode('utf-8')
                     st.success("🔓 Decrypted Text")
                     st.text_area("", plaintext, height=200)
-                
                 except (ValueError, base64.binascii.Error) as e:
                     st.error(f"Invalid ciphertext or padding error: {e}")
         except Exception as e:
             st.error(f"Error during {operation.lower()}: {e}")
+
 if __name__ == "__main__":
     run()
