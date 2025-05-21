@@ -41,14 +41,13 @@ def rsa_decrypt(ciphertext_b64: str, private_key_str: str) -> str:
 def run():
     st.subheader("🔐 RSA Encryption/Decryption")
 
-    operation = st.radio("Operation", ["Encrypt", "Decrypt"])
-
     text_input = st.text_area("Enter Plaintext or Ciphertext (Base64)", help="This accepts alphanumeric and symbols.")
     file = st.file_uploader("Or upload a .txt file", type=["txt"])
     if file:
         text_input = file.read().decode("utf-8")
 
     st.markdown("---")
+    operation = st.radio("Operation", ["Encrypt", "Decrypt"])
 
     col1, col2 = st.columns(2)
     with col1:
