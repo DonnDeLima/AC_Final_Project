@@ -47,15 +47,16 @@ def run():
         text_input = file.read().decode("utf-8")
 
     st.markdown("---")
+    st.markdown("##### 🔑 Key (Paste or Generate)")
+    key_input = st.text_area("Paste your RSA key here")
     if st.button("Generate New Key Pair"):
         private_key, public_key = generate_rsa_keys()
         st.session_state['rsa_private'] = private_key.decode()
         st.session_state['rsa_public'] = public_key.decode()
         st.success("🔑 New key pair generated")
+        
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("##### 🔑 Key (Paste or Generate)")
-        key_input = st.text_area("Paste your RSA key here")
         if key_input:
             try:
                 public_key = RSA.import_key(key_input)
