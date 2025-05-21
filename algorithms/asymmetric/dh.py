@@ -1,43 +1,47 @@
 import streamlit as st
+import base64
 
-def generate_keys(name, private_key):
-    fixed_offset = 7
-    public_key = private_key + fixed_offset if name == "Alice" else private_key - fixed_offset
-    return public_key
+def simple_encrypt(plaintext: str, alice_private: int, bob_public: int) -> str:
+    shared_key = alice_private + bob_public
+    encrypted = [ord(char) + shared_key for char in plaintext]
+    return base64.b64encode(bytes(encrypted)).decode()
 
-def compute_shared_key(my_private, their_public, name):
-    fixed_offset = 7
-    return their_public - fixed_offset if name == "Alice" else their_public + fixed_offset
+def simple_decrypt(cipher_b64: str, bob_private: int, alice_public: int) -> str:
+    shared_key = bob_private + alice_public
+    try:
+        cipher_bytes = base64.b64decode(cipher_b64)
+        decrypted = ''.join([chr(byte - shared_key) for byte in cipher_bytes])
+        return decrypted
+    except Exception as e:
+        return f"[Decryption Error] {e}"
 
 def run():
-    st.subheader("🔐 Simplified Key-Pair Cryptography Demo")
+    st.subheader("🔐 Simple Alice & Bob Key-Pair Cryptography Demo")
 
     col1, col2 = st.columns(2)
     with col1:
-        alice_private = st.number_input("🔑 Alice's Private Key", value=11)
+        alice_private = st.number_input("🔑 Alice's Private Key", min_value=1, value=5)
+        bob_public = st.number_input("🧾 Bob's Public Key", min_value=1, value=7)
     with col2:
-        bob_private = st.number_input("🔑 Bob's Private Key", value=23)
+        bob_private = st.number_input("🔑 Bob's Private Key", min_value=1, value=3)
+        alice_public = st.number_input("🧾 Alice's Public Key", min_value=1, value=9)
 
-    alice_public = generate_keys("Alice", alice_private)
-    bob_public = generate_keys("Bob", bob_private)
+    mode = st.radio("Select Mode", ["Encrypt (Alice → Bob)", "Decrypt (Bob → Alice)"])
 
-    st.markdown("---")
-    st.markdown("### 🧾 Public Keys")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.info(f"Alice's Public Key: `{alice_public}`")
-    with col2:
-        st.info(f"Bob's Public Key: `{bob_public}`")
+    message = st.text_area("Enter Message (Plaintext or Base64 Ciphertext)")
 
-    alice_shared = compute_shared_key(alice_private, bob_public, "Alice")
-    bob_shared = compute_shared_key(bob_private, alice_public, "Bob")
+    if not message.strip():
+        st.info("Enter a message to proceed.")
+        return
 
-    st.markdown("---")
-    st.markdown("### 🔐 Shared Secret")
-    if alice_shared == bob_shared:
-        st.success(f"Shared Key: `{alice_shared}` ✅")
+    if mode == "Encrypt (Alice → Bob)":
+        encrypted = simple_encrypt(message, alice_private, bob_public)
+        st.success("🔐 Encrypted Message (Base64)")
+        st.code(encrypted)
     else:
-        st.error(f"Mismatch! Alice: `{alice_shared}` | Bob: `{bob_shared}` ❌")
+        decrypted = simple_decrypt(message.strip(), bob_private, alice_public)
+        st.success("🔓 Decrypted Message")
+        st.text_area("", decrypted, height=200)
 
 if __name__ == "__main__":
     run()
