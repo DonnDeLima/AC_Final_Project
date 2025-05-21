@@ -40,47 +40,52 @@ def aes_decrypt(ciphertext: bytes, key: bytes) -> bytes:
 def run():
     st.subheader("🔐 Diffie-Hellman Key Exchange with AES Encryption")
 
-    with st.expander("ℹ️ About RSA Algorithm"):
+    with st.expander("ℹ️ About Diffie-Hellman Key Exchange with AES"):
         st.markdown("""
-            **🕰️ Brief History**  
-            RSA was introduced in 1977 by **Rivest, Shamir, and Adleman**. It's one of the first public-key cryptosystems and is widely used for secure data transmission.
-        
-            **🔧 How It Works**  
-            - **Key Generation**:
-                1. Choose two large prime numbers `p` and `q`
-                2. Compute `n = p * q` and `φ(n) = (p - 1)(q - 1)`
-                3. Choose public exponent `e` (commonly 65537)
-                4. Compute private key `d` such that `(d * e) % φ(n) = 1`
-            - **Encryption**: `cipher = (message^e) mod n`
-            - **Decryption**: `message = (cipher^d) mod n`
-        
-            **🧾 Pseudocode**
-            ```
-            Generate Keys:
-                Choose large primes p, q
-                n = p * q
-                phi = (p - 1) * (q - 1)
-                e = choose coprime with phi
-                d = modular_inverse(e, phi)
-                Public key: (e, n), Private key: (d, n)
-        
-            Encrypt(message, e, n):
-                return (message ^ e) mod n
-        
-            Decrypt(cipher, d, n):
-                return (cipher ^ d) mod n
-            ```
-        
-            **📋 Use Cases**
-            - Secure data transmission
-            - Digital signatures
-            - Key exchange
-            - SSL/TLS in web browsers
-        
-            **⚠️ Limitations**
-            - Slower than symmetric encryption algorithms
-            - Requires large key sizes (2048+ bits) for modern security
-            """)
+        **🕰️ Brief History**  
+        The **Diffie-Hellman Key Exchange** was introduced in 1976 by **Whitfield Diffie** and **Martin Hellman**. It was the first public key exchange method enabling two parties to establish a shared secret over an insecure channel.
+
+        **🔐 Purpose**  
+        - Securely establish a **shared secret** without directly transmitting it.
+        - Often used to derive symmetric keys (e.g., for **AES encryption**) in secure communication.
+
+        **🔄 How It Works**  
+        1. Both parties agree on a large prime `P` and a generator `G`.
+        2. Each party generates a **private key** and a corresponding **public key**:
+           - `A_private`, `A_public = G^A_private mod P`
+           - `B_private`, `B_public = G^B_private mod P`
+        3. They exchange **public keys**.
+        4. Each party computes the shared secret:
+           - `shared = B_public^A_private mod P` (same as `A_public^B_private mod P`)
+
+        **🔐 AES Integration**  
+        - The shared secret is converted into a symmetric key.
+        - This key is then used in **AES (Advanced Encryption Standard)** for encrypting/decrypting the actual message.
+
+        **🧾 Pseudocode**  
+        ```
+        P, G = known safe prime and generator
+        A_private = random()
+        A_public = pow(G, A_private, P)
+
+        B_private = random()
+        B_public = pow(G, B_private, P)
+
+        # After exchange:
+        shared_key = pow(B_public, A_private, P)
+        aes_key = derive_from(shared_key)
+        encrypted = AES.encrypt(message, aes_key)
+        ```
+
+        **📋 Use Cases**  
+        - Secure messaging apps
+        - TLS (used in HTTPS)
+        - VPNs and other key agreement protocols
+
+        **⚠️ Note**  
+        Diffie-Hellman alone does not provide authentication. It's often combined with authentication mechanisms to prevent **Man-in-the-Middle** (MITM) attacks.
+        """)
+
 
 
     # Input plaintext/ciphertext
