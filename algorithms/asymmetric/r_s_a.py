@@ -47,7 +47,6 @@ def run():
         text_input = file.read().decode("utf-8")
 
     st.markdown("---")
-    operation = st.radio("Operation", ["Encrypt", "Decrypt"])
 
     col1, col2 = st.columns(2)
     with col1:
@@ -71,6 +70,7 @@ def run():
             st.text_area("🔐 Public Key (for Encryption)", st.session_state['rsa_public'], height=150)
             st.text_area("🔓 Private Key (for Decryption)", st.session_state['rsa_private'], height=150)
 
+    operation = st.radio("Operation", ["Encrypt", "Decrypt"])
     if text_input and key_input:
         if operation == "Encrypt":
             result = rsa_encrypt(text_input, key_input)
