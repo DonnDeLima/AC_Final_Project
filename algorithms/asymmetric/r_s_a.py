@@ -72,15 +72,17 @@ def run():
             st.text_area("🔓 Private Key (for Decryption)", st.session_state['rsa_private'], height=150)
 
     operation = st.radio("Operation", ["Encrypt", "Decrypt"])
+
+
     if text_input and key_input:
         if operation == "Encrypt":
             result = rsa_encrypt(text_input, key_input)
             st.markdown("---")
-            st.success("🔐 Encrypted Output (Base64)")
+            st.subheader("🔐 Encrypted Output (Base64)")
             st.code(result, language="text")
         elif operation == "Decrypt":
             result = rsa_decrypt(text_input, key_input)
             st.markdown("---")
-            st.success("🔓 Decrypted Output")
+            st.subheader("🔓 Decrypted Output")
             st.text_area("Decrypted Text", result, height=200)
 
