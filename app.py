@@ -41,6 +41,8 @@ with st.sidebar.expander("📎 Hashing Algorithms", expanded=False):
         st.session_state.selected_algorithm = "sha3"
 
 # ------------------ Main Panel ------------------ #
+selected = st.session_state.selected_algorithm
+
 if selected_algorithm == "caesar":
     caesar.run()
 elif selected_algorithm == "vernam":
