@@ -14,7 +14,6 @@ if "selected_algorithm" not in st.session_state:
 
 # ------------------ Sidebar (Accordion Style) ------------------ #
 st.sidebar.title("🧪 Choose a Cryptographic Algorithm")
-selected_algorithm = None
 
 with st.sidebar.expander("🔁 Symmetric Algorithms", expanded=False):
     if st.button("Caesar Cipher"):
