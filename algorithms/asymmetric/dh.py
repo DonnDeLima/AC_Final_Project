@@ -27,13 +27,14 @@ def run():
         alice_public = st.number_input("🧾 Alice's Public Key", min_value=1, value=9)
 
     mode = st.radio("Select Mode", ["Encrypt (Alice → Bob)", "Decrypt (Bob → Alice)"])
-
     message = st.text_area("Enter Message (Plaintext or Base64 Ciphertext)")
-
+    
+    st.markdown("---")  # Divider for visual clarity
+    
     if not message.strip():
         st.info("Enter a message to proceed.")
         return
-
+    
     if mode == "Encrypt (Alice → Bob)":
         encrypted = simple_encrypt(message, alice_private, bob_public)
         st.success("🔐 Encrypted Message (Base64)")
