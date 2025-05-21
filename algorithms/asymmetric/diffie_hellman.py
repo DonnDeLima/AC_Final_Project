@@ -24,7 +24,6 @@ def diffie_hellman_generate_shared_key(their_public, my_private):
     return pow(their_public, my_private, P)
 
 def derive_aes_key(shared_secret: int) -> bytes:
-    # Derive 16 bytes AES key from shared secret (simple truncation, can be improved)
     key_bytes = shared_secret.to_bytes((shared_secret.bit_length() + 7) // 8, 'big')
     return key_bytes[:16].ljust(16, b'\0')
 
@@ -62,64 +61,64 @@ def run():
 
     operation = st.radio("Operation", ["Encrypt", "Decrypt"])
 
-    # Auto-generate private key if empty
-    if not your_private_key_input.strip():
-        private_key = diffie_hellman_generate_private_key()
-        your_private_key_input = hex(private_key)[2:]
-        other_private_key = diffie_hellman_generate_private_key()
-        other_private_key_input = hex(other_private_key)[2:]
-    else:
-        try:
-            private_key = int(your_private_key_input.strip(), 16)
-        except ValueError:
-            st.error("Invalid private key format. Must be hex.")
+    if st.button("Run Cipher"):
+        # Auto-generate private key if empty
+        if not your_private_key_input.strip():
+            private_key = diffie_hellman_generate_private_key()
+            your_private_key_input = hex(private_key)[2:]
+            other_private_key = diffie_hellman_generate_private_key()
+            other_private_key_input = hex(other_private_key)[2:]
+        else:
+            try:
+                private_key = int(your_private_key_input.strip(), 16)
+            except ValueError:
+                st.error("Invalid private key format. Must be hex.")
+                return
+
+        # Generate your public key
+        your_public_key = diffie_hellman_generate_public_key(private_key)
+        your_public_key_hex = hex(your_public_key)[2:]
+        other_public_key = diffie_hellman_generate_public_key(other_private_key)
+        other_public_key_hex = hex(other_public_key)[2:]
+
+        # Display your public keys
+        st.text_area("Your Public Key (auto-generated)", your_public_key_hex, height=100)
+        st.text_area("Other Public Key (auto-generated)", other_public_key_hex, height=100)
+        
+        if not their_public_key_input.strip():
+            st.warning("Enter their public key to proceed.")
             return
 
-    # Generate your public key
-    your_public_key = diffie_hellman_generate_public_key(private_key)
-    your_public_key_hex = hex(your_public_key)[2:]
-    other_public_key = diffie_hellman_generate_public_key(other_private_key)
-    other_public_key_hex = hex(other_public_key)[2:]
+        try:
+            their_public_key = int(their_public_key_input.strip(), 16)
+        except ValueError:
+            st.error("Invalid their public key format. Must be hex.")
+            return
 
-    # Display your public key
-    st.text_area("Your Private Key (auto-generated)", your_private_key_input, height=100)
-    st.text_area("Your Public Key (auto-generated)", your_public_key_hex, height=100)
-    st.text_area("Other Public Key (auto-generated)", other_public_key_hex, height=100)
-    
-    if not their_public_key_input.strip():
-        st.warning("Enter their public key to proceed.")
-        return
+        # Generate shared secret and AES key
+        shared_secret = diffie_hellman_generate_shared_key(their_public_key, private_key)
+        aes_key = derive_aes_key(shared_secret)
 
-    try:
-        their_public_key = int(their_public_key_input.strip(), 16)
-    except ValueError:
-        st.error("Invalid their public key format. Must be hex.")
-        return
+        # Load text from file if uploaded
+        if file is not None:
+            text_input = file.read().decode("utf-8")
 
-    # Generate shared secret and AES key
-    shared_secret = diffie_hellman_generate_shared_key(their_public_key, private_key)
-    aes_key = derive_aes_key(shared_secret)
+        if not text_input.strip():
+            st.info("Enter text or upload a file to encrypt/decrypt.")
+            return
 
-    # Load text from file if uploaded
-    if file is not None:
-        text_input = file.read().decode("utf-8")
-
-    if not text_input.strip():
-        st.info("Enter text or upload a file to encrypt/decrypt.")
-        return
-
-    try:
-        if operation == "Encrypt":
-            plaintext_bytes = text_input.encode('utf-8')
-            ciphertext = aes_encrypt(plaintext_bytes, aes_key)
-            cipher_b64 = base64.b64encode(ciphertext).decode()
-            st.success("🔐 Encrypted Text (Base64)")
-            st.text_area("", cipher_b64, height=200)
-        else:  # Decrypt
-            ciphertext_bytes = base64.b64decode(text_input)
-            plaintext_bytes = aes_decrypt(ciphertext_bytes, aes_key)
-            plaintext = plaintext_bytes.decode('utf-8')
-            st.success("🔓 Decrypted Text")
-            st.text_area("", plaintext, height=200)
-    except Exception as e:
-        st.error(f"Error during {operation.lower()}: {e}")
+        try:
+            if operation == "Encrypt":
+                plaintext_bytes = text_input.encode('utf-8')
+                ciphertext = aes_encrypt(plaintext_bytes, aes_key)
+                cipher_b64 = base64.b64encode(ciphertext).decode()
+                st.success("🔐 Encrypted Text (Base64)")
+                st.text_area("", cipher_b64, height=200)
+            else:  # Decrypt
+                ciphertext_bytes = base64.b64decode(text_input)
+                plaintext_bytes = aes_decrypt(ciphertext_bytes, aes_key)
+                plaintext = plaintext_bytes.decode('utf-8')
+                st.success("🔓 Decrypted Text")
+                st.text_area("", plaintext, height=200)
+        except Exception as e:
+            st.error(f"Error during {operation.lower()}: {e}")
