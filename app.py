@@ -51,7 +51,7 @@ elif selected_algorithm == "vigenere":
 elif selected_algorithm == "rsa":
     r_s_a.run()
 elif selected_algorithm == "diffie_hellman":
-    diffie_hellman.run()
+    dh.run()
 elif selected_algorithm == "sha1":
     sha1.run()
 elif selected_algorithm == "md5":
