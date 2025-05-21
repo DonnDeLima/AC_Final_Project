@@ -9,7 +9,7 @@ st.set_page_config(page_title="Cryptography App", layout="wide")
 st.title("🔐 Applied Cryptography Application")
 
 # ------------------ Sidebar State Setup ------------------ #
-f "selected_algorithm" not in st.session_state:
+if "selected_algorithm" not in st.session_state:
     st.session_state.selected_algorithm = None
 
 # ------------------ Sidebar (Accordion Style) ------------------ #
