@@ -46,15 +46,22 @@ def run():
             text_dec = text_to_decimal(text_input)
 
             if operation == "Encrypt":
-                key_dec = generate_key(len(text_input)) if not key_input.strip() else text_to_decimal(key_input)
+                if not key_input.strip():
+                    key_dec = generate_key(len(text_input))
+                    key_str = decimal_to_text(key_dec)
+                else:
+                    key_dec = text_to_decimal(key_input)
+                    key_str = key_input
+
                 if len(key_dec) != len(text_dec):
                     st.text_input("⚠️ Invalid key length", value="", help="Key must match the length of the input text.")
                     return
+
                 cipher_dec = vernam_encrypt(text_dec, key_dec)
-                cipher_text = decimal_to_text(cipher_dec)
-                st.success("🔐 Encrypted Text")
+                cipher_text = decimal_to_text(cipher_dec)  # ASCII output
+                st.success("🔐 Encrypted ASCII Text")
                 st.code(cipher_text)
-                st.text_area("🔑 Key Used", key_input if key_input.strip() else decimal_to_text(key_dec), height=100)
+                st.text_area("🔑 Key Used", key_str, height=100)
 
             else:  # Decrypt
                 if not key_input.strip():
