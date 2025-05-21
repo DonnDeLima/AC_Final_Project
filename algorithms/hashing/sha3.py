@@ -1,32 +1,28 @@
 import streamlit as st
 import hashlib
 
-def hash_text(text):
-    return hashlib.sha3_256(text.encode()).hexdigest()
-
-def hash_file(file):
-    sha3 = hashlib.sha3_256()
-    while chunk := file.read(8192):
-        sha3.update(chunk)
-    return sha3.hexdigest()
+def sha3_hash(text):
+    return hashlib.sha3_256(text.encode('utf-8')).hexdigest()
 
 def run():
-    st.subheader("🔐 SHA-3 Hashing")
+    st.subheader("🔐 SHA-3 Hasher (256-bit)")
+    text_input = st.text_area("Enter Text", help="Type your message to hash")
 
-    mode = st.radio("Choose input type:", ["Text", "File"])
+    file = st.file_uploader("Or upload a .txt file", type=["txt"])
+    if file:
+        try:
+            text_input = file.read().decode("utf-8")
+        except Exception:
+            st.error("Uploaded file must be a valid UTF-8 text file.")
+            return
 
-    if mode == "Text":
-        text = st.text_area("Enter text to hash:")
-        if st.button("Hash Text"):
-            if text:
-                result = hash_text(text)
-                st.success(f"SHA-3 Hash:\n{result}")
-            else:
-                st.warning("Please enter some text.")
-    else:
-        file = st.file_uploader("Upload a file to hash:", type=None)
-        if file and st.button("Hash File"):
-            result = hash_file(file)
-            st.success(f"SHA-3 File Hash:\n{result}")
-        elif not file:
-            st.warning("Please upload a file.")
+    if not text_input.strip():
+        st.info("Awaiting text input or file upload...")
+        return
+
+    try:
+        result = sha3_hash(text_input)
+        st.success("🧾 SHA-3 Hash")
+        st.code(result)
+    except Exception as e:
+        st.error(f"Hashing failed: {e}")
