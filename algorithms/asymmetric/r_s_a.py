@@ -41,6 +41,45 @@ def rsa_decrypt(ciphertext_b64: str, private_key_str: str) -> str:
 def run():
     st.subheader("🔐 RSA Encryption/Decryption")
 
+    with st.expander("ℹ️ About RSA Encryption"):
+        st.markdown("""
+        **🕰️ Brief History**  
+        RSA (Rivest–Shamir–Adleman) was introduced in **1977** and is one of the first public-key cryptosystems, widely used in secure data transmission.
+
+        **🔧 How It Works**  
+        - **Key Generation**: Generates a **public key** (shared) and a **private key** (kept secret).
+        - **Encryption**: Uses the **public key** to encrypt plaintext.
+        - **Decryption**: Uses the **private key** to decrypt ciphertext.
+        - Based on the mathematical difficulty of factoring large prime numbers.
+
+        **🧾 Simplified Pseudocode**  
+        ```
+        Key Generation:
+            Generate two large primes p and q
+            n = p * q
+            φ(n) = (p-1)*(q-1)
+            Choose e (public exponent), such that 1 < e < φ(n)
+            Compute d ≡ e⁻¹ mod φ(n) (private exponent)
+
+        Encryption:
+            ciphertext = plaintext^e mod n
+
+        Decryption:
+            plaintext = ciphertext^d mod n
+        ```
+
+        **📋 Use Cases**  
+        - Secure email (e.g., PGP)
+        - Digital signatures
+        - Secure web traffic (TLS/SSL)
+        - Key exchange in hybrid encryption systems
+
+        **⚠️ Limitations**  
+        - Slow for large data; best used to encrypt small messages or symmetric keys
+        - Vulnerable if key size is too small or implementation is flawed
+        """)
+
+
     text_input = st.text_area("Enter Plaintext or Ciphertext (Base64)", help="This accepts alphanumeric and symbols.")
     file = st.file_uploader("Or upload a .txt file", type=["txt"])
     if file:
