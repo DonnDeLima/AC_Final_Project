@@ -123,13 +123,16 @@ def run():
                 st.success("🔐 Encrypted Text (Base64)")
                 st.text_area("", cipher_b64, height=200)
             else:  # Decrypt
-                ciphertext_bytes = base64.b64decode(text_input)
-                plaintext_bytes = aes_decrypt(ciphertext_bytes, aes_key)
-                plaintext = plaintext_bytes.decode('utf-8')
-                st.success("🔓 Decrypted Text")
-                st.text_area("", plaintext, height=200)
-        except Exception as e:
-            st.error(f"Error during {operation.lower()}: {e}")
+                try:
+                    # Clean the input from extra whitespace/newlines
+                    ciphertext_b64_clean = "".join(text_input.strip().split())
+                    ciphertext_bytes = base64.b64decode(ciphertext_b64_clean)
+                    plaintext_bytes = aes_decrypt(ciphertext_bytes, aes_key)
+                    plaintext = plaintext_bytes.decode('utf-8')
+                    st.success("🔓 Decrypted Text")
+                    st.text_area("", plaintext, height=200)
+                except (ValueError, base64.binascii.Error) as e:
+                    st.error(f"Invalid ciphertext or padding error: {e}")
 
 if __name__ == "__main__":
     run()
