@@ -85,7 +85,6 @@ def run():
     # Generate other party's public key and display
     other_public_key = diffie_hellman_generate_public_key(other_private_key)
     other_public_key_hex = hex(other_public_key)[2:]
-    other_private_key_display.text_area("Other Party Private Key (auto-generated)", other_private_key_hex, height=100)
     other_public_key_display.text_area("Other Party Public Key (auto-generated)", other_public_key_hex, height=100)
 
     if not their_public_key_input.strip():
