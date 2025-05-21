@@ -1,33 +1,29 @@
-import hashlib
 import streamlit as st
+import hashlib
 
-class SHACrypto:
-    def hash_text(self, text: str) -> str:
-        hash_func = hashlib.sha1()
-        hash_func.update(text.encode('utf-8'))
-        return hash_func.hexdigest()
+def sha1_hash(text):
+    return hashlib.sha1(text.encode('utf-8')).hexdigest()
 
-# Streamlit UI
 def run():
-    crypto = SHACrypto()
+    st.subheader("🔐 SHA-1 Hasher")
+    text_input = st.text_area("Enter Text", help="Type your message to hash")
 
-    st.subheader("🔐 SHA-1 Hashing")
+    file = st.file_uploader("Or upload a .txt file", type=["txt"])
 
-    mode = st.radio("Choose input type:", ["Text", "File"])
+    if file:
+        try:
+            text_input = file.read().decode("utf-8")
+        except Exception:
+            st.error("Uploaded file must be a valid UTF-8 text file.")
+            return
 
-    if mode == "Text":
-        text = st.text_area("Enter text to hash:")
-        if st.button("Hash Text"):
-            if text:
-                result = crypto.hash_text(text)
-                st.success(f"SHA-1 Hash:\n{result}")
-            else:
-                st.warning("Please enter some text.")
-    else:
-        uploaded_file = st.file_uploader("Upload a file to hash:")
-        if uploaded_file and st.button("Hash File"):
-            data = uploaded_file.read()
-            result = hashlib.sha1(data).hexdigest()
-            st.success(f"SHA-1 File Hash:\n{result}")
-        elif not uploaded_file:
-            st.warning("Please upload a file.")
+    if not text_input.strip():
+        st.info("Awaiting text input or file upload...")
+        return
+
+    try:
+        result = sha1_hash(text_input)
+        st.success("🧾 SHA-1 Hash")
+        st.code(result)
+    except Exception as e:
+        st.error(f"Hashing failed: {e}")
