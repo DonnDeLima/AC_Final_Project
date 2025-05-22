@@ -1,6 +1,10 @@
+### ***CSAC 329 - Applied Cryptography***
+# **Applied Cryptography Application**
 
-# **Project Title:   Applied Cryptography Application**
-### ***Course Name:     CSAC 329 - Applied Cryptography***
+
+This Streamlit-based web application provides an interactive interface for exploring and using a variety of cryptographic algorithms, including **symmetric**, **asymmetric**, and **hashing** techniques. It is designed for educational and practical use cases, allowing users to input plaintext or files and observe real-time encryption/decryption or hashing results.
+
+**Live Web App**: [Click here to access the app]([https://your-app-url.com](https://acfinalproject-38xarvga3vrxtwtvhxendq.streamlit.app))
 
 **Group Members:** 
 - De Lima, Donn Robert
@@ -30,9 +34,7 @@ The objective of this project is to design and build an interactive, user-friend
 ---
 ---
 
-##  **Application Architecture**
-This Streamlit-based web application provides an interactive interface for exploring and using a variety of cryptographic algorithms, including **symmetric**, **asymmetric**, and **hashing** techniques. It is designed for educational and practical use cases, allowing users to input plaintext or files and observe real-time encryption/decryption or hashing results.
-### 1. **Framework and Structure**
+### **Framework and Structure**
 The application is built using [Streamlit](https://streamlit.io/), a Python framework for rapidly building and deploying interactive web apps.
 
 The app structure is modular, with cryptographic algorithms implemented in separate Python modules categorized as follows:
