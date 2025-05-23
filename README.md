@@ -4,7 +4,9 @@
 
 This Streamlit-based web application provides an interactive interface for exploring and using a variety of cryptographic algorithms, including **symmetric**, **asymmetric**, and **hashing** techniques. It is designed for educational and practical use cases, allowing users to input plaintext or files and observe real-time encryption/decryption or hashing results.
 
-**Live Web App**: [Click here to access the app](https://acfinalproject-38xarvga3vrxtwtvhxendq.streamlit.app/)
+**Live Web App**: [Streamlit Web Application](https://acfinalproject-38xarvga3vrxtwtvhxendq.streamlit.app/)
+
+**Video Presentation**: [Youtube Link](https://youtu.be/gzN27lX6du4)
 
 **Group Members:** 
 - De Lima, Donn Robert
